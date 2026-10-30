@@ -1,4 +1,4 @@
-﻿package com.rahmanyazgan.pyvakitci.service
+package com.rahmanyazgan.pyvakitci.service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -34,6 +34,8 @@ class PrayerNotificationHelper(private val context: Context) {
             ).apply {
                 description = "Vakit girdiğinde ve vakit öncesi uyarı bildirimleri"
                 enableVibration(true)
+                lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
+                setSound(null, null)
             }
             notificationManager.createNotificationChannel(channel)
         }
@@ -48,22 +50,42 @@ class PrayerNotificationHelper(private val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val stopIntent = Intent(context, AlarmReceiver::class.java).apply {
+            action = AlarmReceiver.ACTION_STOP_AUDIO
+        }
+        val stopPi = PendingIntent.getBroadcast(
+            context, 999, stopIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         val notification = NotificationCompat.Builder(context, CHANNEL_ID_PRAYER)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle("$prayerName Vakti Girdi")
             .setContentText("$locationText | Saat: $time")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
+            .addAction(android.R.drawable.ic_media_pause, "Sesi Durdur", stopPi)
             .build()
 
         notificationManager.notify(NOTIFICATION_ID_PRAYER, notification)
     }
 
     fun showWarningNotification(prayerName: String, minutesLeft: Int) {
-        val intent = Intent(context, MainActivity::class.java)
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
         val pendingIntent = PendingIntent.getActivity(
             context, 1, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val stopIntent = Intent(context, AlarmReceiver::class.java).apply {
+            action = AlarmReceiver.ACTION_STOP_AUDIO
+        }
+        val stopPi = PendingIntent.getBroadcast(
+            context, 998, stopIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -71,12 +93,18 @@ class PrayerNotificationHelper(private val context: Context) {
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle("Vakit Yaklaşıyor")
             .setContentText("$prayerName vaktine $minutesLeft dakika kaldı.")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
+            .addAction(android.R.drawable.ic_media_pause, "Sesi Durdur", stopPi)
             .build()
 
         notificationManager.notify(NOTIFICATION_ID_WARNING, notification)
     }
-}
 
+    fun cancelAll() {
+        notificationManager.cancel(NOTIFICATION_ID_PRAYER)
+        notificationManager.cancel(NOTIFICATION_ID_WARNING)
+    }
+}

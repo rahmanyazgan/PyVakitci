@@ -1,8 +1,9 @@
-﻿package com.rahmanyazgan.pyvakitci.widget
+package com.rahmanyazgan.pyvakitci.widget
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
@@ -13,6 +14,24 @@ import com.rahmanyazgan.pyvakitci.data.local.PreferencesManager
 import com.rahmanyazgan.pyvakitci.util.TimeUtil
 
 class PrayerWidgetProvider : AppWidgetProvider() {
+
+    companion object {
+        fun updateAllWidgets(context: Context) {
+            try {
+                val appWidgetManager = AppWidgetManager.getInstance(context)
+                val componentName = ComponentName(context, PrayerWidgetProvider::class.java)
+                val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
+                if (appWidgetIds != null && appWidgetIds.isNotEmpty()) {
+                    val intent = Intent(context, PrayerWidgetProvider::class.java).apply {
+                        action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                        putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds)
+                    }
+                    context.sendBroadcast(intent)
+                }
+            } catch (_: Exception) {}
+        }
+    }
+
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         val prefs = PreferencesManager(context)
         val db = AppDatabaseHelper(context)
@@ -27,7 +46,7 @@ class PrayerWidgetProvider : AppWidgetProvider() {
 
             if (times != null) {
                 val active = TimeUtil.calculateActivePrayer(times)
-                views.setTextViewText(R.id.widget_current_prayer, active.currentPrayer.title.uppercase())
+                views.setTextViewText(R.id.widget_current_prayer, active.currentPrayer.uppercaseTitle)
                 views.setTextViewText(R.id.widget_countdown, active.remainingFormatted)
                 views.setTextViewText(
                     R.id.widget_times_summary,
@@ -50,4 +69,3 @@ class PrayerWidgetProvider : AppWidgetProvider() {
         }
     }
 }
-

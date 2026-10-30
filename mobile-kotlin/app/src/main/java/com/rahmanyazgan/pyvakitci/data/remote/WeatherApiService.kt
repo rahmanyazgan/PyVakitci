@@ -67,7 +67,7 @@ class WeatherApiService {
                             dailyList.add(
                                 DailyForecast(
                                     date = dStr,
-                                    dayName = dayName.replaceFirstChar { it.uppercase() },
+                                    dayName = dayName.replaceFirstChar { it.uppercase(java.util.Locale("tr", "TR")) },
                                     minTemp = minT,
                                     maxTemp = maxT,
                                     weatherCode = code,

@@ -100,6 +100,20 @@ class AppDatabaseHelper(context: Context) :
         return null
     }
 
+    fun getRemainingStoredDaysCount(districtId: String, fromDate: String): Int {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT COUNT(*) FROM $TABLE_PRAYERS WHERE $COL_DISTRICT_ID = ? AND $COL_DATE >= ?",
+            arrayOf(districtId, fromDate)
+        )
+        cursor.use {
+            if (it.moveToFirst()) {
+                return it.getInt(0)
+            }
+        }
+        return 0
+    }
+
     fun getAllStoredDates(districtId: String): List<String> {
         val dates = mutableListOf<String>()
         val db = readableDatabase

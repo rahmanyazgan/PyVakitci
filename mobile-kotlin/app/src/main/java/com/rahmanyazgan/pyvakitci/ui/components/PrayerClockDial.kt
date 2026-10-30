@@ -149,7 +149,7 @@ fun PrayerClockDial(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "✦ ${activeInfo.currentPrayer.title.uppercase()} ✦",
+                text = "✦ ${activeInfo.currentPrayer.uppercaseTitle} ✦",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
                 color = ArcImsak
@@ -163,7 +163,7 @@ fun PrayerClockDial(
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = "${activeInfo.nextPrayer.title}'a Kalan",
+                text = activeInfo.nextPrayer.getRemainingSuffix(),
                 fontSize = 11.sp,
                 color = textColor.copy(alpha = 0.7f)
             )

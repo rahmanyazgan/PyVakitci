@@ -12,6 +12,7 @@ struct PyVakitciApp: App {
     @State private var prayerTimes: PrayerTimes = PrayerTimes.defaultSample()
     @State private var activePrayerInfo: ActivePrayerInfo = TimeUtil.calculateActivePrayer(prayerTimes: PrayerTimes.defaultSample())
     @State private var currentTimeStr: String = TimeUtil.getCurrentTimeString()
+    @State private var currentDayString: String = TimeUtil.getTodayString()
 
     @State private var weatherData: WeatherData = WeatherData.defaultSample()
 
@@ -88,8 +89,25 @@ struct PyVakitciApp: App {
             }
             .background(colors.background.ignoresSafeArea())
             .onReceive(timer) { _ in
-                self.currentTimeStr = TimeUtil.getCurrentTimeString()
-                self.activePrayerInfo = TimeUtil.calculateActivePrayer(prayerTimes: prayerTimes)
+                let now = Date()
+                self.currentTimeStr = TimeUtil.getCurrentTimeString(date: now)
+                self.activePrayerInfo = TimeUtil.calculateActivePrayer(prayerTimes: prayerTimes, date: now)
+
+                // Gece yarisi tarih degisimi kontrolu
+                let today = TimeUtil.getTodayString(date: now)
+                if today != currentDayString {
+                    self.currentDayString = today
+                    let cached = LocalStorageService.shared.loadPrayerTimes(districtId: location.districtId)
+                    if let todayCached = cached.first(where: { $0.date == today }) {
+                        self.prayerTimes = todayCached
+                        self.activePrayerInfo = TimeUtil.calculateActivePrayer(prayerTimes: todayCached, date: now)
+                    }
+                    // Yeni gun baslayinca 6 gunluk bildirim kuyrugunu guncelle
+                    NotificationService.shared.schedulePrayerNotifications(
+                        timesList: cached,
+                        locationText: "\(location.cityName) / \(location.districtName)"
+                    )
+                }
             }
             .onAppear {
                 NotificationService.shared.requestAuthorization()
@@ -105,16 +123,22 @@ struct PyVakitciApp: App {
         compassService.currentLatitude = location.latitude
         compassService.currentLongitude = location.longitude
 
-        // Load offline cached times first if available
+        // Once onbellekteki vakitleri yukle ve bildirimleri hemen kur
         let cached = LocalStorageService.shared.loadPrayerTimes(districtId: location.districtId)
         let today = TimeUtil.getTodayString()
         if let todayCached = cached.first(where: { $0.date == today }) {
             self.prayerTimes = todayCached
             self.activePrayerInfo = TimeUtil.calculateActivePrayer(prayerTimes: todayCached)
         }
+        if !cached.isEmpty {
+            NotificationService.shared.schedulePrayerNotifications(
+                timesList: cached,
+                locationText: "\(location.cityName) / \(location.districtName)"
+            )
+        }
 
         Task {
-            // Load hierarchy
+            // Bolgesel hiyerarsiyi yukle
             let cList = await DiyanetApiService.shared.getCountries()
             let ciList = await DiyanetApiService.shared.getCities(countryId: location.countryId)
             let dList = await DiyanetApiService.shared.getDistricts(countryId: location.countryId, cityId: location.cityId, cityName: location.cityName)
@@ -125,7 +149,7 @@ struct PyVakitciApp: App {
                 self.districts = dList
             }
 
-            // Fetch times
+            // Guncel aylik vakitleri cek
             let times = await DiyanetApiService.shared.fetchMonthlyPrayerTimes(districtId: location.districtId)
             if !times.isEmpty {
                 LocalStorageService.shared.savePrayerTimes(districtId: location.districtId, times: times)
@@ -133,15 +157,16 @@ struct PyVakitciApp: App {
                     await MainActor.run {
                         self.prayerTimes = todayTime
                         self.activePrayerInfo = TimeUtil.calculateActivePrayer(prayerTimes: todayTime)
+                        // Cok gunluk bildirimleri kur
                         NotificationService.shared.schedulePrayerNotifications(
-                            times: todayTime,
+                            timesList: times,
                             locationText: "\(location.cityName) / \(location.districtName)"
                         )
                     }
                 }
             }
 
-            // Fetch weather
+            // Hava durumunu cek
             let w = await WeatherApiService.shared.fetchWeather(latitude: location.latitude, longitude: location.longitude)
             await MainActor.run {
                 self.weatherData = w

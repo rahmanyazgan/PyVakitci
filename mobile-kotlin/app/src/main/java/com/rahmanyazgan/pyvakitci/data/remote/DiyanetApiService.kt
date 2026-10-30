@@ -353,6 +353,24 @@ class DiyanetApiService {
         return getDistricts("2", cityId)
     }
 
+    private val monthMap = mapOf(
+        "Ocak" to "01", "Şubat" to "02", "Mart" to "03", "Nisan" to "04",
+        "Mayıs" to "05", "Haziran" to "06", "Temmuz" to "07", "Ağustos" to "08",
+        "Eylül" to "09", "Ekim" to "10", "Kasım" to "11", "Aralık" to "12"
+    )
+
+    private fun parseMiladiDate(dateStr: String): String? {
+        val clean = dateStr.replace(Regex("<[^>]*>"), "").trim()
+        val parts = clean.split(Regex("\\s+"))
+        if (parts.size >= 3) {
+            val day = parts[0].padStart(2, '0')
+            val month = monthMap[parts[1]] ?: return null
+            val year = parts[2]
+            return "$year-$month-$day"
+        }
+        return null
+    }
+
     suspend fun fetchMonthlyTimes(districtId: String): List<PrayerTimes> = withContext(Dispatchers.IO) {
         val url = "https://namazvakitleri.diyanet.gov.tr/tr-TR/$districtId"
         val request = Request.Builder()
@@ -363,44 +381,68 @@ class DiyanetApiService {
             .build()
 
         val result = mutableListOf<PrayerTimes>()
+        val seenDates = mutableSetOf<String>()
 
         try {
             client.newCall(request).execute().use { response ->
                 if (response.isSuccessful) {
                     val html = response.body?.string() ?: ""
-                    val pattern = Pattern.compile("<tr[^>]*data-date=\"([^\"]+)\"[^>]*>([\\s\\S]*?)</tr>")
-                    val matcher = pattern.matcher(html)
 
-                    val timePattern = Pattern.compile("<td>(\\d{2}:\\d{2})</td>")
+                    val trPattern = Pattern.compile("<tr[^>]*>([\\s\\S]*?)</tr>")
+                    val tdPattern = Pattern.compile("<td[^>]*>([\\s\\S]*?)</td>")
+                    val trMatcher = trPattern.matcher(html)
 
-                    while (matcher.find()) {
-                        val date = matcher.group(1) ?: ""
-                        val rowHtml = matcher.group(2) ?: ""
-
-                        val timeMatcher = timePattern.matcher(rowHtml)
-                        val times = mutableListOf<String>()
-                        while (timeMatcher.find()) {
-                            times.add(timeMatcher.group(1) ?: "")
+                    while (trMatcher.find()) {
+                        val rowHtml = trMatcher.group(1) ?: continue
+                        val tdMatcher = tdPattern.matcher(rowHtml)
+                        val cells = mutableListOf<String>()
+                        while (tdMatcher.find()) {
+                            val cellText = (tdMatcher.group(1) ?: "")
+                                .replace(Regex("<[^>]*>"), "")
+                                .trim()
+                            cells.add(cellText)
                         }
 
-                        if (times.size >= 6) {
-                            val cal = Calendar.getInstance()
-                            val parts = date.split("-")
-                            if (parts.size == 3) {
-                                cal.set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
-                            }
-                            val hijri = Calverter.getHijriDate(cal)
+                        if (cells.size >= 8) {
+                            val formattedDate = parseMiladiDate(cells[0]) ?: continue
+                            if (seenDates.contains(formattedDate)) continue
+                            seenDates.add(formattedDate)
+
+                            val hijri = cells[1]
+                            val imsak = cells[2]
+                            val gunes = cells[3]
+                            val ogle = cells[4]
+                            val ikindi = cells[5]
+                            val aksam = cells[6]
+                            val yatsi = cells[7]
 
                             result.add(
                                 PrayerTimes(
-                                    date = date,
+                                    date = formattedDate,
                                     hijriDate = hijri,
-                                    imsak = times[0],
-                                    gunes = times[1],
-                                    ogle = times[2],
-                                    ikindi = times[3],
-                                    aksam = times[4],
-                                    yatsi = times[5]
+                                    imsak = imsak,
+                                    gunes = gunes,
+                                    ogle = ogle,
+                                    ikindi = ikindi,
+                                    aksam = aksam,
+                                    yatsi = yatsi
+                                )
+                            )
+                        } else if (cells.size == 7) {
+                            val formattedDate = parseMiladiDate(cells[0]) ?: continue
+                            if (seenDates.contains(formattedDate)) continue
+                            seenDates.add(formattedDate)
+
+                            result.add(
+                                PrayerTimes(
+                                    date = formattedDate,
+                                    hijriDate = "",
+                                    imsak = cells[1],
+                                    gunes = cells[2],
+                                    ogle = cells[3],
+                                    ikindi = cells[4],
+                                    aksam = cells[5],
+                                    yatsi = cells[6]
                                 )
                             )
                         }

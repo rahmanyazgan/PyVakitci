@@ -1,4 +1,4 @@
-﻿package com.rahmanyazgan.pyvakitci.data.local
+package com.rahmanyazgan.pyvakitci.data.local
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -29,6 +29,7 @@ class PreferencesManager(context: Context) {
 
         private const val PREFIX_AZAN_ENABLED = "azan_enabled_"
         private const val PREFIX_AZAN_SOUND = "azan_sound_"
+        private const val PREFIX_AZAN_DISPLAY_NAME = "azan_display_name_"
     }
 
     var location: SelectedLocation
@@ -79,20 +80,100 @@ class PreferencesManager(context: Context) {
         get() = prefs.getBoolean(KEY_VIBRATION, true)
         set(value) = prefs.edit().putBoolean(KEY_VIBRATION, value).apply()
 
+    fun normalizePrayerKey(name: String): String {
+        val clean = name.trim().lowercase(java.util.Locale("tr", "TR"))
+            .replace("ı", "i")
+            .replace("ğ", "g")
+            .replace("ü", "u")
+            .replace("ş", "s")
+            .replace("ö", "o")
+            .replace("ç", "c")
+            .replace("\u0307", "")
+
+        return when (clean) {
+            "imsak", "sabah" -> "sabah"
+            "ogle" -> "ogle"
+            "ikindi" -> "ikindi"
+            "aksam" -> "aksam"
+            "yatsi" -> "yatsi"
+            "dua" -> "dua"
+            "sela", "cuma" -> "sela"
+            else -> clean
+        }
+    }
+
+    fun getDefaultSoundForPrayer(prayerName: String): String {
+        return when (normalizePrayerKey(prayerName)) {
+            "sabah" -> "sabah_saba"
+            "ogle" -> "ogle_rast"
+            "ikindi" -> "ikindi_hicaz"
+            "aksam" -> "aksam_segah"
+            "yatsi" -> "yatsi_ussak"
+            "dua" -> "ezan_duasi"
+            "sela" -> "sela"
+            else -> "uyari"
+        }
+    }
+
     fun isPrayerSoundEnabled(prayerName: String): Boolean {
-        return prefs.getBoolean(PREFIX_AZAN_ENABLED + prayerName.lowercase(), true)
+        val key = normalizePrayerKey(prayerName)
+        return prefs.getBoolean(PREFIX_AZAN_ENABLED + key, true)
     }
 
     fun setPrayerSoundEnabled(prayerName: String, enabled: Boolean) {
-        prefs.edit().putBoolean(PREFIX_AZAN_ENABLED + prayerName.lowercase(), enabled).apply()
+        val key = normalizePrayerKey(prayerName)
+        prefs.edit().putBoolean(PREFIX_AZAN_ENABLED + key, enabled).apply()
     }
 
-    fun getPrayerSound(prayerName: String, defaultRaw: String): String {
-        return prefs.getString(PREFIX_AZAN_SOUND + prayerName.lowercase(), defaultRaw) ?: defaultRaw
+    fun getPrayerSound(prayerName: String, defaultRaw: String = ""): String {
+        val key = normalizePrayerKey(prayerName)
+        val fallback = if (defaultRaw.isNotEmpty()) defaultRaw else getDefaultSoundForPrayer(key)
+        return prefs.getString(PREFIX_AZAN_SOUND + key, fallback) ?: fallback
     }
 
     fun setPrayerSound(prayerName: String, rawName: String) {
-        prefs.edit().putString(PREFIX_AZAN_SOUND + prayerName.lowercase(), rawName).apply()
+        val key = normalizePrayerKey(prayerName)
+        prefs.edit().putString(PREFIX_AZAN_SOUND + key, rawName).apply()
+    }
+
+    fun getPrayerSoundDisplayName(prayerName: String): String {
+        val key = normalizePrayerKey(prayerName)
+        val customName = prefs.getString(PREFIX_AZAN_DISPLAY_NAME + key, null)
+        if (!customName.isNullOrEmpty()) return customName
+        val sound = getPrayerSound(key)
+        return when (sound) {
+            "sabah_saba" -> "Sabah (Saba Makamı)"
+            "ogle_rast" -> "Öğle (Rast Makamı)"
+            "ikindi_hicaz" -> "İkindi (Hicaz Makamı)"
+            "aksam_segah" -> "Akşam (Segah Makamı)"
+            "yatsi_ussak" -> "Yatsı (Uşşak Makamı)"
+            "ezan_duasi" -> "Ezan Duası"
+            "sela" -> "Cuma Selası"
+            "uyari" -> "Kısa Uyarı Sesi"
+            else -> sound.substringAfterLast("/")
+        }
+    }
+
+    fun setPrayerSoundCustom(prayerName: String, filePath: String, displayName: String) {
+        val key = normalizePrayerKey(prayerName)
+        prefs.edit()
+            .putString(PREFIX_AZAN_SOUND + key, filePath)
+            .putString(PREFIX_AZAN_DISPLAY_NAME + key, displayName)
+            .apply()
+    }
+
+    fun resetPrayerSoundToDefault(prayerName: String) {
+        val key = normalizePrayerKey(prayerName)
+        val defaultSound = getDefaultSoundForPrayer(key)
+        prefs.edit()
+            .putString(PREFIX_AZAN_SOUND + key, defaultSound)
+            .remove(PREFIX_AZAN_DISPLAY_NAME + key)
+            .apply()
+    }
+
+    fun isCustomSound(prayerName: String): Boolean {
+        val key = normalizePrayerKey(prayerName)
+        return prefs.contains(PREFIX_AZAN_DISPLAY_NAME + key)
     }
 }
 

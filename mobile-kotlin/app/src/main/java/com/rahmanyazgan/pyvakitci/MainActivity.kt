@@ -32,6 +32,8 @@ import com.rahmanyazgan.pyvakitci.data.remote.WeatherApiService
 import com.rahmanyazgan.pyvakitci.sensor.QiblaCompassManager
 import com.rahmanyazgan.pyvakitci.service.AudioPlayerManager
 import com.rahmanyazgan.pyvakitci.service.BootReceiver
+import com.rahmanyazgan.pyvakitci.service.PrayerNotificationHelper
+import com.rahmanyazgan.pyvakitci.widget.PrayerWidgetProvider
 import com.rahmanyazgan.pyvakitci.ui.components.BottomNavBar
 import com.rahmanyazgan.pyvakitci.ui.screens.AudioSettingsScreen
 import com.rahmanyazgan.pyvakitci.ui.screens.HomeScreen
@@ -43,6 +45,8 @@ import com.rahmanyazgan.pyvakitci.ui.theme.getAppColors
 import com.rahmanyazgan.pyvakitci.util.TimeUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Calendar
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
 
@@ -52,6 +56,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var weatherApi: WeatherApiService
     private lateinit var audioPlayer: AudioPlayerManager
     private var compassManager: QiblaCompassManager? = null
+    private var currentSelectedTab: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,10 +67,15 @@ class MainActivity : ComponentActivity() {
         weatherApi = WeatherApiService()
         audioPlayer = AudioPlayerManager(this)
 
+        try {
+            BootReceiver.schedulePrayerAlarms(this)
+        } catch (_: Exception) {}
+
         setContent {
             var selectedTheme by remember { mutableStateOf(prefs.theme) }
             var selectedMode by remember { mutableStateOf(prefs.interfaceMode) }
             var selectedTab by remember { mutableIntStateOf(0) }
+            currentSelectedTab = selectedTab
 
             val appColors = getAppColors(selectedTheme)
 
@@ -91,7 +101,7 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
-            // Compass State
+            // Compass State (Sadece Kıble sekmesinde aktif)
             var azimuth by remember { mutableFloatStateOf(0f) }
             var qiblaAngle by remember { mutableFloatStateOf(0f) }
             var isAligned by remember { mutableStateOf(false) }
@@ -99,24 +109,26 @@ class MainActivity : ComponentActivity() {
             var currentLat by remember { mutableDoubleStateOf(prefs.location.latitude) }
             var currentLon by remember { mutableDoubleStateOf(prefs.location.longitude) }
 
-            // Location permission launcher
-            val locationPermissionLauncher = rememberLauncherForActivityResult(
+            // Permissions launcher (Location & Notification)
+            val permissionLauncher = rememberLauncherForActivityResult(
                 ActivityResultContracts.RequestMultiplePermissions()
             ) { perms ->
                 val granted = perms[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
                               perms[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-                if (granted) {
+                if (granted && selectedTab == 2) {
                     compassManager?.requestLocationUpdates()
                 }
             }
 
             LaunchedEffect(Unit) {
-                locationPermissionLauncher.launch(
-                    arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    )
+                val perms = mutableListOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
                 )
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    perms.add(Manifest.permission.POST_NOTIFICATIONS)
+                }
+                permissionLauncher.launch(perms.toTypedArray())
             }
 
             // Location lists
@@ -126,11 +138,87 @@ class MainActivity : ComponentActivity() {
 
             val scope = rememberCoroutineScope()
 
-            // 1-Second Clock Timer
-            LaunchedEffect(Unit) {
+            // Açılışta veya dakika içinde 1 defa anlık uyarı / ezan tetikleyici
+            var lastTriggeredPrayerMinute by remember { mutableStateOf<String?>(null) }
+            var lastTriggeredWarningMinute by remember { mutableStateOf<String?>(null) }
+
+            // 1-Saniyelik Saat Döngüsü ve Anlık Vakit / Uyarı Kontrolü
+            LaunchedEffect(prayerTimes, prefs.isWarningSoundEnabled, prefs.warningMinutes) {
                 while (true) {
+                    val now = Calendar.getInstance()
                     currentTimeStr = TimeUtil.getCurrentTimeString()
-                    activePrayerInfo = TimeUtil.calculateActivePrayer(prayerTimes)
+                    activePrayerInfo = TimeUtil.calculateActivePrayer(prayerTimes, now)
+
+                    val currentHourMinute = String.format(Locale.US, "%02d:%02d", now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE))
+                    val currentMinuteTotal = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
+
+                    val prayers = listOf(
+                        "İmsak" to prayerTimes.imsak,
+                        "Öğle" to prayerTimes.ogle,
+                        "İkindi" to prayerTimes.ikindi,
+                        "Akşam" to prayerTimes.aksam,
+                        "Yatsı" to prayerTimes.yatsi
+                    )
+
+                    // 1) Ezan / Vakit Giriş Kontrolü (O dakika içinde en az 1 kere)
+                    for ((name, timeStr) in prayers) {
+                        if (timeStr == currentHourMinute) {
+                            val triggerKey = "${TimeUtil.getTodayString()}_${currentHourMinute}_$name"
+                            val prayerKey = prefs.normalizePrayerKey(name)
+                            val prayerTag = "ezan_$prayerKey"
+
+                            if (AudioPlayerManager.isAnyAudioPlaying() &&
+                                (AudioPlayerManager.currentPlayingTag == prayerTag || AudioPlayerManager.currentPlayingTag == "ezan_duasi")) {
+                                lastTriggeredPrayerMinute = triggerKey
+                            } else if (lastTriggeredPrayerMinute != triggerKey &&
+                                       AudioPlayerManager.lastTriggeredKey != triggerKey &&
+                                       !AudioPlayerManager.isAnyAudioPlaying()) {
+                                lastTriggeredPrayerMinute = triggerKey
+                                AudioPlayerManager.lastTriggeredKey = triggerKey
+                                PrayerWidgetProvider.updateAllWidgets(this@MainActivity)
+                                if (prefs.isPrayerSoundEnabled(prayerKey)) {
+                                    val loc = prefs.location
+                                    PrayerNotificationHelper(this@MainActivity)
+                                        .showPrayerNotification(name, timeStr, "${loc.cityName} / ${loc.districtName}")
+
+                                    val sound = prefs.getPrayerSound(prayerKey)
+                                    audioPlayer.onCompletionListener = {
+                                        if (prefs.isPrayerSoundEnabled("dua")) {
+                                            audioPlayer.playAudio(prefs.getPrayerSound("dua"), prefs.volume, tag = "ezan_duasi")
+                                        }
+                                    }
+                                    audioPlayer.playAudio(sound, prefs.volume, tag = prayerTag)
+                                }
+                            }
+                        }
+                    }
+
+                    // 2) Erken Uyarı Kontrolü (15 dk önce o dakika içinde 1 kere)
+                    if (prefs.isWarningSoundEnabled && prefs.warningMinutes > 0) {
+                        for ((name, timeStr) in prayers) {
+                            val pMinutes = TimeUtil.timeToMinutes(timeStr)
+                            val targetWarnMinute = pMinutes - prefs.warningMinutes
+                            if (targetWarnMinute == currentMinuteTotal) {
+                                val warnTriggerKey = "${TimeUtil.getTodayString()}_${currentHourMinute}_warn_$name"
+                                val warnTag = "uyari_$name"
+
+                                if (AudioPlayerManager.isAnyAudioPlaying() && AudioPlayerManager.currentPlayingTag == warnTag) {
+                                    lastTriggeredWarningMinute = warnTriggerKey
+                                } else if (lastTriggeredWarningMinute != warnTriggerKey &&
+                                           AudioPlayerManager.lastTriggeredKey != warnTriggerKey &&
+                                           !AudioPlayerManager.isAnyAudioPlaying()) {
+                                    lastTriggeredWarningMinute = warnTriggerKey
+                                    AudioPlayerManager.lastTriggeredKey = warnTriggerKey
+                                    PrayerNotificationHelper(this@MainActivity)
+                                        .showWarningNotification(name, prefs.warningMinutes)
+
+                                    val warnSound = prefs.getPrayerSound("uyari")
+                                    audioPlayer.playAudio(warnSound, prefs.volume, tag = warnTag)
+                                }
+                            }
+                        }
+                    }
+
                     delay(1000)
                 }
             }
@@ -142,40 +230,44 @@ class MainActivity : ComponentActivity() {
                     cities = diyanetApi.getCities(prefs.location.countryId)
                     districts = diyanetApi.getDistricts(prefs.location.countryId, prefs.location.cityId, prefs.location.cityName)
 
-                    // Fetch monthly prayer times
                     val fetched = diyanetApi.fetchMonthlyTimes(prefs.location.districtId)
                     if (fetched.isNotEmpty()) {
                         dbHelper.savePrayerTimes(prefs.location.districtId, fetched)
-                        val today = TimeUtil.getTodayString()
-                        val todayTimes = dbHelper.getPrayerTimesForDate(prefs.location.districtId, today)
-                        if (todayTimes != null) {
-                            prayerTimes = todayTimes
-                            activePrayerInfo = TimeUtil.calculateActivePrayer(todayTimes)
-                        }
-                        BootReceiver.schedulePrayerAlarms(this@MainActivity)
                     }
+                    val today = TimeUtil.getTodayString()
+                    val todayTimes = dbHelper.getPrayerTimesForDate(prefs.location.districtId, today)
+                    if (todayTimes != null) {
+                        prayerTimes = todayTimes
+                        activePrayerInfo = TimeUtil.calculateActivePrayer(todayTimes)
+                    }
+                    BootReceiver.schedulePrayerAlarms(this@MainActivity)
+                    PrayerWidgetProvider.updateAllWidgets(this@MainActivity)
 
-                    // Fetch weather
                     weatherData = weatherApi.fetchWeather(prefs.location.latitude, prefs.location.longitude)
                 }
             }
 
-            // Initialize Compass with real GPS listener
-            LaunchedEffect(prefs.location) {
-                compassManager?.stop()
-                compassManager = QiblaCompassManager(this@MainActivity) { az, qibla, aligned, gps ->
-                    azimuth = az
-                    qiblaAngle = qibla
-                    isAligned = aligned
-                    hasGps = gps
-                    compassManager?.let {
-                        currentLat = it.currentLatitude
-                        currentLon = it.currentLongitude
+            // SADECE Kıble sekmesine (sekme 2) girildiğinde Pusulayı ve GPS'i çalıştır
+            LaunchedEffect(selectedTab, prefs.location) {
+                if (selectedTab == 2) {
+                    compassManager?.stop()
+                    compassManager = QiblaCompassManager(this@MainActivity) { az, qibla, aligned, gps ->
+                        azimuth = az
+                        qiblaAngle = qibla
+                        isAligned = aligned
+                        hasGps = gps
+                        compassManager?.let {
+                            currentLat = it.currentLatitude
+                            currentLon = it.currentLongitude
+                        }
+                    }.apply {
+                        currentLatitude = prefs.location.latitude
+                        currentLongitude = prefs.location.longitude
+                        start()
                     }
-                }.apply {
-                    currentLatitude = prefs.location.latitude
-                    currentLongitude = prefs.location.longitude
-                    start()
+                } else {
+                    compassManager?.stop()
+                    compassManager = null
                 }
             }
 
@@ -247,6 +339,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                     weatherData = weatherApi.fetchWeather(newLoc.latitude, newLoc.longitude)
                                     BootReceiver.schedulePrayerAlarms(this@MainActivity)
+                                    PrayerWidgetProvider.updateAllWidgets(this@MainActivity)
                                 }
                             },
                             onThemeChanged = { newTheme ->
@@ -265,19 +358,24 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        compassManager?.start()
+        if (currentSelectedTab == 2) {
+            compassManager?.start()
+        }
     }
 
     override fun onPause() {
         super.onPause()
         compassManager?.stop()
-        audioPlayer.stopSound()
+        if (AudioPlayerManager.currentPlayingTag?.startsWith("preview_") == true) {
+            audioPlayer.stopSound()
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        audioPlayer.stopSound()
         compassManager?.stop()
+        if (AudioPlayerManager.currentPlayingTag?.startsWith("preview_") == true) {
+            audioPlayer.stopSound()
+        }
     }
 }
-

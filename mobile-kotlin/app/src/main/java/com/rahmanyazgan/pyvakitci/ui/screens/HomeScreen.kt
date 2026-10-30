@@ -116,7 +116,7 @@ fun HomeScreen(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "✦ ${activeInfo.currentPrayer.title.uppercase()} ✦",
+                            text = "✦ ${activeInfo.currentPrayer.uppercaseTitle} ✦",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFFFFD700)
@@ -130,7 +130,7 @@ fun HomeScreen(
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
-                            text = "${activeInfo.nextPrayer.title}'a Kalan",
+                            text = activeInfo.nextPrayer.getRemainingSuffix(),
                             fontSize = 14.sp,
                             color = Color.White.copy(alpha = 0.8f)
                         )
@@ -156,7 +156,7 @@ fun HomeScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "${activeInfo.currentPrayer.title.uppercase()} VAKTİ",
+                            text = "${activeInfo.currentPrayer.uppercaseTitle} VAKTİ",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = colors.primary
@@ -169,7 +169,7 @@ fun HomeScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "${activeInfo.nextPrayer.title} Vaktine Kalan Süre: ${activeInfo.remainingFormatted}",
+                            text = "${activeInfo.nextPrayer.getRemainingSuffix()}: ${activeInfo.remainingFormatted}",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = Color(0xFFD32F2F)

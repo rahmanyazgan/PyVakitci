@@ -1,5 +1,21 @@
 import Foundation
 
+public enum PrayerSoundMode: Int, Codable, CaseIterable, Identifiable {
+    case ezan = 0
+    case bip = 1
+    case sessiz = 2
+
+    public var id: Int { rawValue }
+
+    public var title: String {
+        switch self {
+        case .ezan: return "Ezan"
+        case .bip: return "Bip"
+        case .sessiz: return "Sessiz"
+        }
+    }
+}
+
 public class LocalStorageService {
     public static let shared = LocalStorageService()
     private let userDefaults = UserDefaults.standard
@@ -10,6 +26,7 @@ public class LocalStorageService {
     private let keyWarningMinutes = "pyvakitci_warning_minutes"
     private let keyVolume = "pyvakitci_volume"
     private let keyVibration = "pyvakitci_vibration"
+    private let keyEzanDuasi = "pyvakitci_ezan_duasi"
 
     public func saveLocation(_ location: SelectedLocation) {
         if let data = try? JSONEncoder().encode(location) {
@@ -83,17 +100,54 @@ public class LocalStorageService {
         userDefaults.set(enabled, forKey: keyVibration)
     }
 
-    public func isPrayerSoundEnabled(prayerName: String) -> Bool {
-        let key = "azan_enabled_\(prayerName.lowercased())"
-        if userDefaults.object(forKey: key) == nil {
+    public func isEzanDuasiEnabled() -> Bool {
+        if userDefaults.object(forKey: keyEzanDuasi) == nil {
             return true
         }
-        return userDefaults.bool(forKey: key)
+        return userDefaults.bool(forKey: keyEzanDuasi)
+    }
+
+    public func setEzanDuasiEnabled(_ enabled: Bool) {
+        userDefaults.set(enabled, forKey: keyEzanDuasi)
+    }
+
+    public func getPrayerSoundMode(prayerName: String) -> PrayerSoundMode {
+        let key = "prayer_sound_mode_\(normalizePrayerName(prayerName))"
+        if let val = userDefaults.object(forKey: key) as? Int,
+           let mode = PrayerSoundMode(rawValue: val) {
+            return mode
+        }
+        // Geriye donuk uyumluluk: eski boolean degeri kontrol et
+        let legacyKey = "azan_enabled_\(normalizePrayerName(prayerName))"
+        if userDefaults.object(forKey: legacyKey) != nil {
+            return userDefaults.bool(forKey: legacyKey) ? .ezan : .sessiz
+        }
+        return .ezan
+    }
+
+    public func setPrayerSoundMode(prayerName: String, mode: PrayerSoundMode) {
+        let key = "prayer_sound_mode_\(normalizePrayerName(prayerName))"
+        userDefaults.set(mode.rawValue, forKey: key)
+        let legacyKey = "azan_enabled_\(normalizePrayerName(prayerName))"
+        userDefaults.set(mode != .sessiz, forKey: legacyKey)
+    }
+
+    public func isPrayerSoundEnabled(prayerName: String) -> Bool {
+        return getPrayerSoundMode(prayerName: prayerName) != .sessiz
     }
 
     public func setPrayerSoundEnabled(prayerName: String, enabled: Bool) {
-        let key = "azan_enabled_\(prayerName.lowercased())"
-        userDefaults.set(enabled, forKey: key)
+        setPrayerSoundMode(prayerName: prayerName, mode: enabled ? .ezan : .sessiz)
+    }
+
+    private func normalizePrayerName(_ name: String) -> String {
+        return name.lowercased()
+            .replacingOccurrences(of: "ı", with: "i")
+            .replacingOccurrences(of: "ö", with: "o")
+            .replacingOccurrences(of: "ü", with: "u")
+            .replacingOccurrences(of: "ş", with: "s")
+            .replacingOccurrences(of: "ç", with: "c")
+            .replacingOccurrences(of: "ğ", with: "g")
     }
 }
 

@@ -34,6 +34,13 @@ fun PrayerGrid(
     borderColor: Color,
     modifier: Modifier = Modifier
 ) {
+    fun isMatchingPrayer(cardName: String, prayer: PrayerKind): Boolean {
+        if (cardName.equals(prayer.title, ignoreCase = true)) return true
+        if (cardName.equals("İmsak", ignoreCase = true) && prayer == PrayerKind.IMSAK) return true
+        if (cardName.equals("Sabah", ignoreCase = true) && prayer == PrayerKind.IMSAK) return true
+        return false
+    }
+
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -47,7 +54,7 @@ fun PrayerGrid(
                 PrayerCard(
                     title = name,
                     time = time,
-                    isActive = name.equals(activePrayer.title, ignoreCase = true),
+                    isActive = isMatchingPrayer(name, activePrayer),
                     surfaceColor = surfaceColor,
                     textColor = textColor,
                     borderColor = borderColor,
@@ -64,7 +71,7 @@ fun PrayerGrid(
                 PrayerCard(
                     title = name,
                     time = time,
-                    isActive = name.equals(activePrayer.title, ignoreCase = true),
+                    isActive = isMatchingPrayer(name, activePrayer),
                     surfaceColor = surfaceColor,
                     textColor = textColor,
                     borderColor = borderColor,

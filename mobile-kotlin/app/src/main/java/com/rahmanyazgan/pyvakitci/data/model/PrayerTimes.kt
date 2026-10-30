@@ -22,7 +22,7 @@ data class PrayerTimes(
     companion object {
         fun defaultSample(): PrayerTimes {
             return PrayerTimes(
-                date = "2026-10-29",
+                date = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Calendar.getInstance().time),
                 hijriDate = "17 Cemaziyelevvel 1448",
                 imsak = "05:58",
                 gunes = "07:24",
@@ -35,13 +35,26 @@ data class PrayerTimes(
     }
 }
 
-enum class PrayerKind(val title: String) {
-    IMSAK("İmsak"),
-    GUNES("Güneş"),
-    OGLE("Öğle"),
-    IKINDI("İkindi"),
-    AKSAM("Akşam"),
-    YATSI("Yatsı")
+val TR_LOCALE = java.util.Locale("tr", "TR")
+fun String.toTrUpper(): String = this.uppercase(TR_LOCALE)
+fun String.toTrLower(): String = this.lowercase(TR_LOCALE)
+
+enum class PrayerKind(val title: String, val uppercaseTitle: String) {
+    IMSAK("Sabah", "SABAH"),
+    GUNES("Güneş", "GÜNEŞ"),
+    OGLE("Öğle", "ÖĞLE"),
+    IKINDI("İkindi", "İKİNDİ"),
+    AKSAM("Akşam", "AKŞAM"),
+    YATSI("Yatsı", "YATSI");
+
+    fun getRemainingSuffix(): String = when (this) {
+        IMSAK -> "Sabah'a Kalan"
+        GUNES -> "Güneş'e Kalan"
+        OGLE -> "Öğle'ye Kalan"
+        IKINDI -> "İkindi'ye Kalan"
+        AKSAM -> "Akşam'a Kalan"
+        YATSI -> "Yatsı'ya Kalan"
+    }
 }
 
 data class ActivePrayerInfo(

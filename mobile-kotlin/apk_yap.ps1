@@ -24,6 +24,13 @@ if (Test-Path $apkPath) {
     Write-Host "[BASARILI] APK basariyla olusturuldu!" -ForegroundColor Green
     Write-Host "Dosya: $destPath" -ForegroundColor Yellow
     Write-Host "==========================================" -ForegroundColor Cyan
+
+    # WhatsApp Otomatik Gonderim
+    $sendScript = "$PSScriptRoot\scripts\send_whatsapp.py"
+    if (Test-Path $sendScript) {
+        Write-Host "`n[WHATSAPP] APK WhatsApp (+905535836434) uzerinden gonderiliyor..." -ForegroundColor Cyan
+        python "$sendScript" "$destPath" "905535836434"
+    }
 } else {
     Write-Host "`n==========================================" -ForegroundColor Red
     Write-Host "[HATA] APK dosyasi bulunamadi: $apkPath" -ForegroundColor Red
