@@ -1,0 +1,90 @@
+# Build & Distribution artifacts
+dist/
+build/
+**/dist/
+**/build/
+**/out/
+**/bin/
+
+# Executables, Libraries & Packages
+*.exe
+*.dll
+*.so
+*.dylib
+*.obj
+*.o
+*.a
+*.lib
+*.apk
+*.aab
+*.dex
+
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+**/*.egg-info/
+.eggs/
+*.egg
+.venv/
+venv/
+ENV/
+
+# C++ / Qt / CMake / Visual Studio
+CMakeCache.txt
+CMakeFiles/
+**/CMakeFiles/
+cmake_install.cmake
+**/cmake_install.cmake
+Makefile
+**/Makefile
+*.vcxproj*
+*.sln
+*.suo
+*.user
+*.pdb
+*.idb
+*.ilk
+.vs/
+**/.vs/
+*.qmake.stash
+
+# Android & Gradle
+.gradle/
+**/.gradle/
+local.properties
+.cxx/
+**/.cxx/
+captures/
+*.hprof
+.externalNativeBuild/
+**/.externalNativeBuild/
+
+# Swift / Xcode
+.build/
+**/.build/
+Packages/
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+.swiftpm/
+**/.swiftpm/
+
+# IDE, Editor & OS
+.vscode/
+**/.vscode/
+.idea/
+**/.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+# Scratch and temporary dev scripts
+scratch/
+**/scratch/
+*.tmp
+*.log

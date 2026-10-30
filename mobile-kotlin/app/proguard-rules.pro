@@ -1,0 +1,2 @@
+# PyVakitci Proguard Rules
+

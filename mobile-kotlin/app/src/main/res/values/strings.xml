@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PyVakitci</string>
+    <string name="vakit_saati">Vakit Saati</string>
+    <string name="hava_durumu">Hava Durumu</string>
+    <string name="kible_pusulasi">Kıble Pusulası</string>
+    <string name="ayarlar">Ayarlar</string>
+    <string name="ses_ayarlari">Ses Ayarları</string>
+
+    <string name="imsak">İmsak</string>
+    <string name="gunes">Güneş</string>
+    <string name="ogle">Öğle</string>
+    <string name="ikindi">İkindi</string>
+    <string name="aksam">Akşam</string>
+    <string name="yatsi">Yatsı</string>
+
+    <string name="kaynak_diyanet">Kaynak: diyanet.gov.tr</string>
+</resources>
+

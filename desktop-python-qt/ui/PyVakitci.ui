@@ -1,0 +1,2427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>351</width>
+    <height>511</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>351</width>
+    <height>511</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>351</width>
+    <height>511</height>
+   </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>Arial</family>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>PyVakitci</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="PyVakitci.qrc">
+    <normaloff>:/resimler/cami.png</normaloff>:/resimler/cami.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>330</width>
+      <height>441</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>310</width>
+      <height>441</height>
+     </size>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
+    <property name="tabPosition">
+     <enum>QTabWidget::South</enum>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>38</width>
+      <height>38</height>
+     </size>
+    </property>
+    <property name="usesScrollButtons">
+     <bool>false</bool>
+    </property>
+    <widget class="QWidget" name="pyvakitci_tab">
+     <attribute name="icon">
+      <iconset resource="PyVakitci.qrc">
+       <normaloff>:/resimler/cami.png</normaloff>:/resimler/cami.png</iconset>
+     </attribute>
+     <attribute name="title">
+      <string notr="true"/>
+     </attribute>
+     <attribute name="toolTip">
+      <string>Namaz Vakitleri</string>
+     </attribute>
+     <widget class="QGroupBox" name="bilgiler_groupBox">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>13</x>
+        <y>12</y>
+        <width>301</width>
+        <height>64</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="title">
+       <string/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <widget class="QLabel" name="ulke_label">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>150</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="sehir_label">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>40</y>
+         <width>160</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="miladi_tarih">
+       <property name="geometry">
+        <rect>
+         <x>198</x>
+         <y>10</y>
+         <width>98</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="hicri_tarih">
+       <property name="geometry">
+        <rect>
+         <x>156</x>
+         <y>25</y>
+         <width>140</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="saat_label">
+       <property name="geometry">
+        <rect>
+         <x>204</x>
+         <y>40</y>
+         <width>92</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="namaz_vakitleri_groupBox">
+      <property name="geometry">
+       <rect>
+        <x>13</x>
+        <y>84</y>
+        <width>301</width>
+        <height>301</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="title">
+       <string/>
+      </property>
+      <widget class="QLabel" name="namaz_vakti_label">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>15</y>
+         <width>281</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="Line" name="line">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>30</y>
+         <width>221</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>221</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>221</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+      <widget class="QLabel" name="imsak_label">
+       <property name="geometry">
+        <rect>
+         <x>92</x>
+         <y>55</y>
+         <width>50</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>İmsak</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="gunes_label">
+       <property name="geometry">
+        <rect>
+         <x>92</x>
+         <y>85</y>
+         <width>50</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>Güneş</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="ogle_label">
+       <property name="geometry">
+        <rect>
+         <x>92</x>
+         <y>115</y>
+         <width>50</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>Öğle</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="ikindi_label">
+       <property name="geometry">
+        <rect>
+         <x>92</x>
+         <y>145</y>
+         <width>50</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>İkindi</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="aksam_label">
+       <property name="geometry">
+        <rect>
+         <x>92</x>
+         <y>175</y>
+         <width>50</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>Akşam</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="yatsi_label">
+       <property name="geometry">
+        <rect>
+         <x>92</x>
+         <y>205</y>
+         <width>50</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>Yatsı</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="nokta_label">
+       <property name="geometry">
+        <rect>
+         <x>152</x>
+         <y>57</y>
+         <width>10</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="nokta_label_2">
+       <property name="geometry">
+        <rect>
+         <x>152</x>
+         <y>87</y>
+         <width>10</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="text">
+        <string>:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="nokta_label_3">
+       <property name="geometry">
+        <rect>
+         <x>152</x>
+         <y>117</y>
+         <width>10</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="nokta_label_4">
+       <property name="geometry">
+        <rect>
+         <x>152</x>
+         <y>147</y>
+         <width>10</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="text">
+        <string>:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="nokta_label_5">
+       <property name="geometry">
+        <rect>
+         <x>152</x>
+         <y>177</y>
+         <width>10</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="nokta_label_6">
+       <property name="geometry">
+        <rect>
+         <x>152</x>
+         <y>207</y>
+         <width>10</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="text">
+        <string>:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="imsak_saat_label">
+       <property name="geometry">
+        <rect>
+         <x>172</x>
+         <y>58</y>
+         <width>50</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="gunes_saat_label">
+       <property name="geometry">
+        <rect>
+         <x>172</x>
+         <y>88</y>
+         <width>50</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="ogle_saat_label">
+       <property name="geometry">
+        <rect>
+         <x>172</x>
+         <y>118</y>
+         <width>50</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="ikindi_saat_label">
+       <property name="geometry">
+        <rect>
+         <x>172</x>
+         <y>148</y>
+         <width>50</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="aksam_saat_label">
+       <property name="geometry">
+        <rect>
+         <x>172</x>
+         <y>178</y>
+         <width>50</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="yatsi_saat_label">
+       <property name="geometry">
+        <rect>
+         <x>172</x>
+         <y>208</y>
+         <width>50</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="sonraki_vakit_label">
+       <property name="geometry">
+        <rect>
+         <x>95</x>
+         <y>235</y>
+         <width>130</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>9</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="kalan_sure_label">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>255</y>
+         <width>120</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="dini_gun_label">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>275</y>
+         <width>281</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="bolgesel_ayarlar_tab">
+     <attribute name="icon">
+      <iconset resource="PyVakitci.qrc">
+       <normaloff>:/resimler/world.png</normaloff>:/resimler/world.png</iconset>
+     </attribute>
+     <attribute name="title">
+      <string notr="true"/>
+     </attribute>
+     <attribute name="toolTip">
+      <string>Bölgesel Ayarlar</string>
+     </attribute>
+     <widget class="QGroupBox" name="bolgesel_ayarlar_groupBox">
+      <property name="geometry">
+       <rect>
+        <x>13</x>
+        <y>4</y>
+        <width>301</width>
+        <height>381</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>280</width>
+        <height>381</height>
+       </size>
+      </property>
+      <property name="title">
+       <string>Bölgesel Ayarlar</string>
+      </property>
+      <widget class="QLabel" name="bolgesel_ayarlar_ulke_label">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>35</y>
+         <width>71</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Ülke :</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="ulkeler_comboBox">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>30</y>
+         <width>200</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+      <widget class="QLabel" name="bolgesel_ayarlar_sehir_label">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>75</y>
+         <width>71</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Şehir :</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="sehirler_comboBox">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>70</y>
+         <width>200</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="bolgesel_ayarlar_kaydet_pushButton">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>345</y>
+         <width>85</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>Program kapanıp açıldığında yaptığınız değişikliklerin
+hatırlanması için buraya tıklayın.</string>
+       </property>
+       <property name="text">
+        <string>Kaydet</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="bolgesel_ayarlar_varsayilan_pushButton">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>345</y>
+         <width>85</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>Varsayılan ayarlara dönmek isterseniz buraya tıklayın.</string>
+       </property>
+       <property name="text">
+        <string>Varsayılan</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="ilceler_comboBox">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>110</y>
+         <width>200</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+      <widget class="QLabel" name="bolgesel_ayarlar_ilce_label">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>115</y>
+         <width>71</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>İlçe :</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="ayarlar_tab">
+     <attribute name="icon">
+      <iconset resource="PyVakitci.qrc">
+       <normaloff>:/resimler/ayarlar.png</normaloff>:/resimler/ayarlar.png</iconset>
+     </attribute>
+     <attribute name="title">
+      <string/>
+     </attribute>
+     <attribute name="toolTip">
+      <string>Genel Ayarlar</string>
+     </attribute>
+     <widget class="QGroupBox" name="ayarlar_groupBox">
+      <property name="geometry">
+       <rect>
+        <x>13</x>
+        <y>4</y>
+        <width>301</width>
+        <height>381</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>280</width>
+        <height>381</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="title">
+       <string>Ayarlar</string>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+      <widget class="QCheckBox" name="otomatik_calistir_checkBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>25</y>
+         <width>285</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Açılışta programı otomatik çalıştır</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="her_zaman_ustte_checkBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>125</y>
+         <width>285</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Her zaman üstte göster</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="erken_uyari_checkBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>200</y>
+         <width>285</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Vakit girmeden önce uyar (dk) :</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="ayarlar_kaydet_pushButton">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>345</y>
+         <width>85</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Program kapanıp açıldığında yaptığınız değişikliklerin
+hatırlanması için buraya tıklayın.</string>
+       </property>
+       <property name="text">
+        <string>Kaydet</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="ayarlar_varsayilan_pushButton">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>345</y>
+         <width>85</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Varsayılan ayarlara dönmek isterseniz buraya tıklayın.</string>
+       </property>
+       <property name="text">
+        <string>Varsayılan</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="besmele_ile_basla_checkBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>150</y>
+         <width>285</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Besmele ile başla</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="otomatik_guncellestir_checkBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>100</y>
+         <width>285</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Güncellemeleri kontrol et</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="sistem_tepsisinde_baslat_checkBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>75</y>
+         <width>285</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Programı sistem tepsisinde başlat</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="vakitleri_goster_pushButton">
+       <property name="geometry">
+        <rect>
+         <x>21</x>
+         <y>275</y>
+         <width>263</width>
+         <height>26</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string> Vakitleri aylık olarak göster</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="vakitleri_guncelle_pushButton">
+       <property name="geometry">
+        <rect>
+         <x>21</x>
+         <y>310</y>
+         <width>263</width>
+         <height>26</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Aylık vakitleri şimdi güncelle</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="erken_uyari_sela_checkBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>225</y>
+         <width>285</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Selayı vakit girmeden oku (dk) :</string>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="erken_uyari_sela_spinBox">
+       <property name="geometry">
+        <rect>
+         <x>240</x>
+         <y>226</y>
+         <width>42</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>120</number>
+       </property>
+       <property name="value">
+        <number>55</number>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="erken_uyari_spinBox">
+       <property name="geometry">
+        <rect>
+         <x>240</x>
+         <y>201</y>
+         <width>42</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="value">
+        <number>45</number>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="hicri_gun_ekle_checkBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>250</y>
+         <width>285</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Hicri tarihteki gecikmeyi önlemek için kullanabilirsiniz. Ayda bir hicri tarihi başka kaynaktan kontrol etmek gerekebilir.</string>
+       </property>
+       <property name="text">
+        <string>Hicri tarihe gün ilave et :</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="ikon_goster_checkBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>50</y>
+         <width>285</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Aktif değilse program çarpıya tıklandığında kapanır.</string>
+       </property>
+       <property name="text">
+        <string>Sistem tepsisinde ikon göster.</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="winamp_duraklat_checkBox">
+       <property name="geometry">
+        <rect>
+         <x>153</x>
+         <y>175</y>
+         <width>141</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Winamp'ta çalan şarkıyı duraklat.</string>
+       </property>
+       <property name="text">
+        <string>Winampı duraklat</string>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="hicri_tarih_gun_ekle_spinBox">
+       <property name="geometry">
+        <rect>
+         <x>240</x>
+         <y>250</y>
+         <width>42</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>-1</number>
+       </property>
+       <property name="maximum">
+        <number>1</number>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="stopify_duraklat_checkBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>175</y>
+         <width>137</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Spotify'da çalan şarkıyı duraklat.</string>
+       </property>
+       <property name="text">
+        <string>Spotifyı duraklat</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="ses_dosyalari_tab">
+     <attribute name="icon">
+      <iconset resource="PyVakitci.qrc">
+       <normaloff>:/resimler/ses_dosyalari.png</normaloff>:/resimler/ses_dosyalari.png</iconset>
+     </attribute>
+     <attribute name="title">
+      <string notr="true"/>
+     </attribute>
+     <attribute name="toolTip">
+      <string>Ses Dosyaları</string>
+     </attribute>
+     <widget class="QLabel" name="sabah_ses_label">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>70</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Sabah :</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="sabah_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>17</y>
+        <width>160</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QToolButton" name="sabah_toolButton">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>18</y>
+        <width>40</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Ekle</string>
+      </property>
+     </widget>
+     <widget class="QToolButton" name="dua_toolButton">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>208</y>
+        <width>40</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Ekle</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="dua_ses_label">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>210</y>
+        <width>70</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Dua :</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="aksam_ses_label">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>134</y>
+        <width>70</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Akşam :</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="aksam_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>131</y>
+        <width>160</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QToolButton" name="aksam_toolButton">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>132</y>
+        <width>40</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Ekle</string>
+      </property>
+     </widget>
+     <widget class="QToolButton" name="uyari_toolButton">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>288</y>
+        <width>40</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Ekle</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="yatsi_ses_label">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>172</y>
+        <width>70</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Yatsı :</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="yatsi_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>169</y>
+        <width>160</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QToolButton" name="yatsi_toolButton">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>170</y>
+        <width>40</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Ekle</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="uyari_ses_label">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>290</y>
+        <width>70</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Uyarı :</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ogle_ses_label">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>58</y>
+        <width>70</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Öğle :</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="ogle_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>55</y>
+        <width>160</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QToolButton" name="ogle_toolButton">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>56</y>
+        <width>40</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Ekle</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="uyari_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>287</y>
+        <width>160</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="dua_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>207</y>
+        <width>160</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ikindi_ses_label">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>96</y>
+        <width>70</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>İkindi :</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="ikindi_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>93</y>
+        <width>160</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QToolButton" name="ikindi_toolButton">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>94</y>
+        <width>40</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Ekle</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="ses_kaydet_pushButton">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>350</y>
+        <width>85</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Program kapanıp açıldığında yaptığınız değişikliklerin
+hatırlanması için buraya tıklayın.</string>
+      </property>
+      <property name="text">
+       <string>Kaydet</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="ses_varsayilan_pushButton">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>350</y>
+        <width>85</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Varsayılan ayarlara dönmek isterseniz buraya tıklayın.</string>
+      </property>
+      <property name="text">
+       <string>Varsayılan</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="sela_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>247</y>
+        <width>160</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="sela_ses_label">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>250</y>
+        <width>70</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Sela :</string>
+      </property>
+     </widget>
+     <widget class="QToolButton" name="sela_toolButton">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>248</y>
+        <width>40</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Ekle</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="sabah_ezani_oku_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>295</x>
+        <y>20</y>
+        <width>21</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="ogle_ezani_oku_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>295</x>
+        <y>58</y>
+        <width>21</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="ikindi_ezani_oku_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>295</x>
+        <y>96</y>
+        <width>21</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="aksam_ezani_oku_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>295</x>
+        <y>134</y>
+        <width>21</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="yatsi_ezani_oku_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>295</x>
+        <y>172</y>
+        <width>21</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="dua_oku_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>295</x>
+        <y>210</y>
+        <width>21</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="sela_oku_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>295</x>
+        <y>250</y>
+        <width>21</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="uyari_sesi_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>295</x>
+        <y>290</y>
+        <width>21</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QSlider" name="horizontalSlider">
+      <property name="geometry">
+       <rect>
+        <x>189</x>
+        <y>320</y>
+        <width>121</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="maximum">
+       <number>100</number>
+      </property>
+      <property name="value">
+       <number>30</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="tickPosition">
+       <enum>QSlider::TicksBelow</enum>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="linkler_tab">
+     <attribute name="icon">
+      <iconset resource="PyVakitci.qrc">
+       <normaloff>:/resimler/linkler.png</normaloff>:/resimler/linkler.png</iconset>
+     </attribute>
+     <attribute name="title">
+      <string notr="true"/>
+     </attribute>
+     <attribute name="toolTip">
+      <string>Yararlı Siteler</string>
+     </attribute>
+     <widget class="QGroupBox" name="linkler_groupBox">
+      <property name="geometry">
+       <rect>
+        <x>13</x>
+        <y>4</y>
+        <width>301</width>
+        <height>381</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Yararlı Siteler</string>
+      </property>
+      <widget class="QLabel" name="site_01_label">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>25</y>
+         <width>270</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Arial'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.sorularlaislamiyet.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Sorularla İslamiyet&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLabel" name="site_04_label">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>65</y>
+         <width>270</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Arial'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.kurantv.net&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Kuran.tv&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLabel" name="site_05_label">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>105</y>
+         <width>270</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Arial'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://kuran.diyanet.gov.tr&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Diyanet Kur'an Eğitimi&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLabel" name="site_06_label">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>145</y>
+         <width>270</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Arial'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://kuran.diyanet.gov.tr/mushaf&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Diyanet (Kur'an-ı Kerim ve Meâli)&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLabel" name="site_07_label">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>185</y>
+         <width>270</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Arial'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://tanzil.net&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Tanzil (Kur'an-ı Kerim ve Meâli)&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLabel" name="site_11_label">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>225</y>
+         <width>270</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Arial'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://vakithesaplama.diyanet.gov.tr/icerik.php?icerik=153&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Dini Günler ve Geceler&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLabel" name="site_12_label">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>265</y>
+         <width>141</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Arial'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://www.erisale.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Risale-i Nur Külliyatı&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_android">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>265</y>
+         <width>21</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>Anroid için Risale-i Nur</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="PyVakitci.qrc">
+         <normaloff>:/resimler/android.png</normaloff>:/resimler/android.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_ios">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>265</y>
+         <width>21</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>iPhone için Risale-i Nur</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="PyVakitci.qrc">
+         <normaloff>:/resimler/ios.png</normaloff>:/resimler/ios.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>351</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+   <widget class="QMenu" name="menuDosya">
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>Dosya</string>
+    </property>
+    <addaction name="actionCikis"/>
+   </widget>
+   <widget class="QMenu" name="menuYardim">
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>Yardım</string>
+    </property>
+    <addaction name="actionLisans"/>
+    <addaction name="separator"/>
+    <addaction name="actionHakkinda"/>
+    <addaction name="actionQtHakkinda"/>
+   </widget>
+   <widget class="QMenu" name="menuGorunum">
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>Görünüm</string>
+    </property>
+    <addaction name="actionFusion"/>
+    <addaction name="separator"/>
+    <addaction name="actionWindowsXP"/>
+    <addaction name="actionWindowsVista"/>
+   </widget>
+   <addaction name="menuDosya"/>
+   <addaction name="menuGorunum"/>
+   <addaction name="menuYardim"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+  </widget>
+  <action name="actionLisans">
+   <property name="text">
+    <string>Lisans</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+  </action>
+  <action name="actionHakkinda">
+   <property name="text">
+    <string>Hakkında</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+  </action>
+  <action name="actionQtHakkinda">
+   <property name="text">
+    <string>Qt Hakkında</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+  </action>
+  <action name="actionCikis">
+   <property name="icon">
+    <iconset resource="PyVakitci.qrc">
+     <normaloff>:/resimler/cikis.png</normaloff>:/resimler/cikis.png</iconset>
+   </property>
+   <property name="text">
+    <string>Çıkış</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+   <property name="shortcut">
+    <string>Esc</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionWindowsVista">
+   <property name="text">
+    <string>Windows Vista</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+  </action>
+  <action name="actionFusion">
+   <property name="text">
+    <string>Fusion</string>
+   </property>
+   <property name="toolTip">
+    <string>Fusion</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+  </action>
+  <action name="actionWindowsXP">
+   <property name="text">
+    <string>Windows XP</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="PyVakitci.qrc"/>
+ </resources>
+ <connections/>
+ <slots>
+  <slot>sabah_namazi()</slot>
+ </slots>
+</ui>

@@ -1,0 +1,12 @@
+<RCC>
+  <qresource>
+    <file>resimler/ayarlar.png</file>
+    <file>resimler/android.png</file>
+    <file>resimler/ios.png</file>
+    <file>resimler/cami.png</file>
+    <file>resimler/cikis.png</file>
+    <file>resimler/linkler.png</file>
+    <file>resimler/ses_dosyalari.png</file>
+    <file>resimler/world.png</file>
+  </qresource>
+</RCC>
