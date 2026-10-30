@@ -57,7 +57,7 @@ def copy_file_to_clipboard(file_path: str) -> bool:
         print(f"[UYARI] Panoya dosya kopyalama hatasi: {e}")
         return False
 
-def send_apk_to_whatsapp(apk_path: str, phone: str = "905535836434"):
+def send_apk_to_whatsapp(apk_path: str, recipient: str = "@rahmanyazgan"):
     if not os.path.exists(apk_path):
         print(f"[HATA] APK dosyasi bulunamadi: {apk_path}")
         return False
@@ -68,7 +68,7 @@ def send_apk_to_whatsapp(apk_path: str, phone: str = "905535836434"):
     print(f"\n========================================================")
     print(f"[WHATSAPP] APK Gonderimi Baslatiliyor (Ctrl+V Yontemi)...")
     print(f"Dosya: {os.path.basename(abs_apk_path)} ({file_size_mb:.2f} MB)")
-    print(f"Alici: +{phone}")
+    print(f"Alici: {recipient}")
     print(f"========================================================")
 
     # 1. Dosyayi Windows panosuna kopyala
@@ -103,11 +103,17 @@ def send_apk_to_whatsapp(apk_path: str, phone: str = "905535836434"):
         return False
 
     try:
-        target_url = f"https://web.whatsapp.com/send?phone={phone}"
+        is_phone = recipient.replace("+", "").replace(" ", "").replace("-", "").isdigit()
+        if is_phone:
+            clean_phone = recipient.replace("+", "").replace(" ", "").replace("-", "")
+            target_url = f"https://web.whatsapp.com/send?phone={clean_phone}"
+        else:
+            target_url = "https://web.whatsapp.com"
+
         print(f"[3/5] WhatsApp Web aciliyor: {target_url}")
         driver.get(target_url)
 
-        # Oturum ve sohbet kontrolu
+        # Oturum ve yuklenme kontrolu
         logged_in = False
         start_wait = time.time()
         qr_notified = False
@@ -126,13 +132,15 @@ def send_apk_to_whatsapp(apk_path: str, phone: str = "905535836434"):
             chat_indicators = driver.find_elements(
                 By.XPATH,
                 "//div[@contenteditable='true'] | "
+                "//div[@id='pane-side'] | "
+                "//div[@id='side'] | "
                 "//footer//div[@contenteditable='true'] | "
                 "//span[@data-icon='plus'] | "
                 "//div[@id='main']"
             )
             if chat_indicators:
                 logged_in = True
-                print("[OK] WhatsApp Web oturumu acik, sohbete baglanildi!")
+                print("[OK] WhatsApp Web oturumu acik, baglanti kuruldu!")
                 break
 
             time.sleep(2)
@@ -141,7 +149,52 @@ def send_apk_to_whatsapp(apk_path: str, phone: str = "905535836434"):
             print("[HATA] 120 saniye icinde WhatsApp Web oturumu acilamadi.")
             return False
 
-        time.sleep(2)
+        time.sleep(1.5)
+
+        # Eger isim/kullanici adi ile arama yapilacaksa (@rahmanyazgan gibi)
+        if not is_phone:
+            clean_name = recipient.lstrip("@").strip()
+            print(f"[...] '{recipient}' sohbeti seciliyor...")
+
+            chat_opened = False
+            # 1. Once sol paneldeki sohbet listesinde doğrudan aramayi dene
+            try:
+                candidates = driver.find_elements(
+                    By.XPATH,
+                    f"//div[@id='pane-side']//span[contains(translate(@title, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '{clean_name.lower()}')] | "
+                    f"//div[@id='pane-side']//span[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '{clean_name.lower()}')]"
+                )
+                for cand in candidates:
+                    if cand.is_displayed():
+                        clickable = cand.find_element(By.XPATH, "./ancestor::*[@role='listitem' or @role='row']") if cand else cand
+                        clickable.click()
+                        chat_opened = True
+                        print(f"  -> '{recipient}' sohbet listesinde bulundu ve acildi.")
+                        break
+            except Exception:
+                pass
+
+            # 2. Eger listede gorunmuyorsa sol arama kutusuna yazarak ac
+            if not chat_opened:
+                search_boxes = driver.find_elements(
+                    By.XPATH,
+                    "//div[@contenteditable='true'][@data-tab='3'] | "
+                    "//div[@id='side']//div[@contenteditable='true'] | "
+                    "//div[@role='textbox']"
+                )
+                if search_boxes:
+                    s_box = search_boxes[0]
+                    s_box.click()
+                    time.sleep(0.3)
+                    s_box.send_keys(Keys.CONTROL, "a")
+                    s_box.send_keys(Keys.BACKSPACE)
+                    s_box.send_keys(clean_name)
+                    time.sleep(1.5)
+                    s_box.send_keys(Keys.ENTER)
+                    time.sleep(1.0)
+                    print(f"  -> Arama cubugundan '{recipient}' arandi ve secildi.")
+
+        time.sleep(1.5)
 
         # 4. Sohbete Odaklan ve Ctrl+V Yap
         print("[4/5] Sohbete odaklaniliyor ve panodaki APK Ctrl+V ile yapistiriliyor...")
@@ -149,6 +202,7 @@ def send_apk_to_whatsapp(apk_path: str, phone: str = "905535836434"):
         # Mesaj kutusunu bul ve odaklan
         chat_selectors = [
             "//footer//div[@contenteditable='true']",
+            "//div[@id='main']//footer//div[@contenteditable='true']",
             "//div[@contenteditable='true'][@data-tab='10']",
             "//div[@contenteditable='true'][@data-tab='6']",
             "//div[@contenteditable='true']"
@@ -233,7 +287,7 @@ def send_apk_to_whatsapp(apk_path: str, phone: str = "905535836434"):
 
         print(f"\n========================================================")
         print(f"[BASARILI] {os.path.basename(abs_apk_path)} WhatsApp uzerinden")
-        print(f"+{phone} numarasina basariyla iletildi!")
+        print(f"{recipient} sohbetine basariyla iletildi!")
         print(f"========================================================\n")
         time.sleep(1.0)
         return True
@@ -244,7 +298,7 @@ def send_apk_to_whatsapp(apk_path: str, phone: str = "905535836434"):
         if any(term in err_str for term in ["session deleted", "disconnected", "no such window", "invalid session id"]):
             print(f"\n========================================================")
             print(f"[BASARILI] {os.path.basename(abs_apk_path)} WhatsApp uzerinden")
-            print(f"+{phone} numarasina basariyla iletildi!")
+            print(f"{recipient} sohbetine basariyla iletildi!")
             print(f"========================================================\n")
             return True
         else:
@@ -272,10 +326,10 @@ if __name__ == "__main__":
 
         if not target_apk:
             print("[HATA] Gonderilecek APK dosyasi belirtilmedi ve dizinde herhangi bir .apk bulunamadi.")
-            print("Kullanim: python send_whatsapp.py <apk_dosya_yolu> [telefon_no]")
+            print("Kullanim: python send_whatsapp.py <apk_dosya_yolu> [alici_kisi_veya_tel]")
             sys.exit(1)
 
-    target_phone = sys.argv[2] if len(sys.argv) > 2 else "905535836434"
+    target_recipient = sys.argv[2] if len(sys.argv) > 2 else "@rahmanyazgan"
 
-    success = send_apk_to_whatsapp(target_apk, target_phone)
+    success = send_apk_to_whatsapp(target_apk, target_recipient)
     sys.exit(0 if success else 1)

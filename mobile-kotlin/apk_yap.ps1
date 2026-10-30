@@ -28,8 +28,8 @@ if (Test-Path $apkPath) {
     # WhatsApp Otomatik Gonderim
     $sendScript = "$PSScriptRoot\scripts\send_whatsapp.py"
     if (Test-Path $sendScript) {
-        Write-Host "`n[WHATSAPP] APK WhatsApp (+905535836434) uzerinden gonderiliyor..." -ForegroundColor Cyan
-        python "$sendScript" "$destPath" "905535836434"
+        Write-Host "`n[WHATSAPP] APK WhatsApp (@rahmanyazgan) uzerinden gonderiliyor..." -ForegroundColor Cyan
+        python "$sendScript" "$destPath" "@rahmanyazgan"
     }
 } else {
     Write-Host "`n==========================================" -ForegroundColor Red
