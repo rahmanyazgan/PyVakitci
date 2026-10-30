@@ -17,5 +17,6 @@ Diyanet verilerine göre tüm ülkeler için namaz vakitlerini gösterir. PyQt5 
 - Ses dosyaları bölümündeki ses ayarı ile programın kullandığı ses dosyalarının hangi seviyede çıkacağını belirleyebilirsiniz. Bu ses ayarı sadece bu programı etkiler.
 - Programdan hızlıca çıkmak için Escape (Esc) tuşunu kullanabilirsiniz.
 
-Önemli Not:<br />
-Saatler ileri veya geri alındığında programdaki namaz vakitlerini takvimle karşılaştırınız.
+<b>Not<b>:<br />
+- Saatler ileri veya geri alındığında programdaki namaz vakitlerini takvimle karşılaştırınız.
+- Kıble pusulası deneyseldir, e-diyanet uygulamasını dikkate alınız.
