@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PyVakitci</string>
+    <string name="vakit_saati">Gebetsuhr</string>
+    <string name="hava_durumu">Wetter</string>
+    <string name="kible_pusulasi">Qibla-Kompass</string>
+    <string name="ayarlar">Einstellungen</string>
+    <string name="ses_ayarlari">Toneinstellungen</string>
+
+    <string name="imsak">Fadschr</string>
+    <string name="gunes">Sonnenaufgang</string>
+    <string name="ogle">Dhuhr</string>
+    <string name="ikindi">Asr</string>
+    <string name="aksam">Maghrib</string>
+    <string name="yatsi">Ischa</string>
+
+    <string name="kaynak_diyanet">Quelle: diyanet.gov.tr</string>
+</resources>
+

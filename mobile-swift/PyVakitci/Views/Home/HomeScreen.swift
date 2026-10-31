@@ -1,6 +1,7 @@
 import SwiftUI
 
 public struct HomeScreen: View {
+    @ObservedObject private var loc = LocalizationManager.shared
     public let prayerTimes: PrayerTimes
     public let activeInfo: ActivePrayerInfo
     public let location: SelectedLocation
@@ -55,7 +56,7 @@ public struct HomeScreen: View {
                 if interfaceMode == "gokyuzu" {
                     // Dinamik Gökyüzü Modu
                     VStack(spacing: 6) {
-                        Text("✦ \(activeInfo.currentPrayer.rawValue.uppercased()) ✦")
+                        Text("✦ \(activeInfo.currentPrayer.localizedName.uppercased(with: loc.currentLocale)) ✦")
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(Color.yellow)
 
@@ -63,7 +64,7 @@ public struct HomeScreen: View {
                             .font(.system(size: 42, weight: .black, design: .rounded))
                             .foregroundColor(.white)
 
-                        Text("\(activeInfo.nextPrayer.rawValue)'a Kalan")
+                        Text(activeInfo.nextPrayer.remainingSuffix)
                             .font(.system(size: 14))
                             .foregroundColor(.white.opacity(0.8))
 
@@ -84,7 +85,7 @@ public struct HomeScreen: View {
                 } else if interfaceMode == "kartlar" {
                     // Modern Kartlar Modu
                     VStack(spacing: 6) {
-                        Text("\(activeInfo.currentPrayer.rawValue.uppercased()) VAKTİ")
+                        Text(loc.f("h_time_of", activeInfo.currentPrayer.localizedName.uppercased(with: loc.currentLocale)))
                             .font(.system(size: 16, weight: .bold))
                             .foregroundColor(colors.primary)
 
@@ -92,7 +93,7 @@ public struct HomeScreen: View {
                             .font(.system(size: 38, weight: .heavy, design: .rounded))
                             .foregroundColor(colors.text)
 
-                        Text("\(activeInfo.nextPrayer.rawValue) Vaktine Kalan: \(activeInfo.remainingFormatted)")
+                        Text("\(activeInfo.nextPrayer.remainingSuffix): \(activeInfo.remainingFormatted)")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundColor(Color.red)
                     }
@@ -122,7 +123,7 @@ public struct HomeScreen: View {
                 )
 
                 // Source text
-                Text("Kaynak: diyanet.gov.tr")
+                Text(loc.tr("h_source"))
                     .font(.system(size: 11))
                     .foregroundColor(colors.text.opacity(0.45))
                     .padding(.top, 4)

@@ -45,6 +45,18 @@ import com.rahmanyazgan.pyvakitci.data.model.Country
 import com.rahmanyazgan.pyvakitci.data.model.District
 import com.rahmanyazgan.pyvakitci.data.model.SelectedLocation
 import com.rahmanyazgan.pyvakitci.ui.theme.AppColors
+import com.rahmanyazgan.pyvakitci.util.L10n
+import com.rahmanyazgan.pyvakitci.service.PrayerNotificationHelper
+import com.rahmanyazgan.pyvakitci.widget.PrayerWidgetProvider
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.foundation.layout.fillMaxHeight
 
 @Composable
 fun SettingsScreen(
@@ -78,6 +90,13 @@ fun SettingsScreen(
     var currentMode by remember { mutableStateOf(prefs.interfaceMode) }
 
     var savedMessage by remember { mutableStateOf(false) }
+    var languageExpanded by remember { mutableStateOf(false) }
+    var showLicense by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    if (showLicense) {
+        LicenseDialog(colors = colors, onDismiss = { showLicense = false })
+    }
 
     Column(
         modifier = modifier
@@ -87,7 +106,7 @@ fun SettingsScreen(
             .verticalScroll(scrollState)
     ) {
         Text(
-            text = "Bölgesel ve Genel Ayarlar",
+            text = L10n.t("s_title"),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = colors.text
@@ -109,14 +128,14 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Konum Seçimi",
+                        text = L10n.t("s_location"),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = colors.primary
                     )
                     if (isLoadingLocation) {
                         Text(
-                            text = "Yükleniyor...",
+                            text = L10n.t("s_loading"),
                             fontSize = 12.sp,
                             color = colors.primary
                         )
@@ -126,7 +145,7 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 // Ülke Seçimi
-                Text(text = "Ülke", fontSize = 12.sp, color = colors.text.copy(alpha = 0.6f))
+                Text(text = L10n.t("s_country"), fontSize = 12.sp, color = colors.text.copy(alpha = 0.6f))
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -174,7 +193,7 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Şehir Seçimi
-                Text(text = "Şehir", fontSize = 12.sp, color = colors.text.copy(alpha = 0.6f))
+                Text(text = L10n.t("s_city"), fontSize = 12.sp, color = colors.text.copy(alpha = 0.6f))
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -217,7 +236,7 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // İlçe Seçimi
-                Text(text = "İlçe", fontSize = 12.sp, color = colors.text.copy(alpha = 0.6f))
+                Text(text = L10n.t("s_district"), fontSize = 12.sp, color = colors.text.copy(alpha = 0.6f))
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -269,13 +288,13 @@ fun SettingsScreen(
                 ) {
                     Icon(imageVector = Icons.Default.Check, contentDescription = null)
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = "Konumu Kaydet ve Vakitleri Güncelle")
+                    Text(text = L10n.t("s_save_loc"))
                 }
 
                 if (savedMessage) {
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        text = "Konum kaydedildi!",
+                        text = L10n.t("s_saved"),
                         color = colors.primary,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
@@ -296,7 +315,7 @@ fun SettingsScreen(
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Arayüz Modu",
+                    text = L10n.t("s_ui_mode"),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = colors.primary
@@ -305,9 +324,9 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 val modes = listOf(
-                    "saat" to "Kadranlı Vakit Saati (Varsayılan)",
-                    "gokyuzu" to "Dinamik Gökyüzü Modu",
-                    "kartlar" to "Modern Kartlar Modu"
+                    "saat" to L10n.t("mode_saat"),
+                    "gokyuzu" to L10n.t("mode_gokyuzu"),
+                    "kartlar" to L10n.t("mode_kartlar")
                 )
 
                 modes.forEach { (modeKey, label) ->
@@ -347,7 +366,7 @@ fun SettingsScreen(
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Renk Teması",
+                    text = L10n.t("s_theme"),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = colors.primary
@@ -356,11 +375,11 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 val themes = listOf(
-                    "varsayilan" to "Açık Tema (Varsayılan)",
-                    "koyu" to "Modern Koyu Tema",
-                    "gece_mavisi" to "Gece Mavisi",
-                    "zumrut" to "Zümrüt Yeşili",
-                    "kehribar" to "Sıcak Kehribar"
+                    "varsayilan" to L10n.t("th_varsayilan"),
+                    "koyu" to L10n.t("th_koyu"),
+                    "gece_mavisi" to L10n.t("th_gece_mavisi"),
+                    "zumrut" to L10n.t("th_zumrut"),
+                    "kehribar" to L10n.t("th_kehribar")
                 )
 
                 themes.forEach { (themeKey, label) ->
@@ -389,11 +408,87 @@ fun SettingsScreen(
             }
         }
 
+        Spacer(modifier = Modifier.height(18.dp))
+
+        // Dil Seçimi (6 dil)
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = colors.surface),
+            elevation = CardDefaults.cardElevation(2.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = L10n.t("s_language"),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colors.primary
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { languageExpanded = true }
+                        .padding(vertical = 8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(imageVector = Icons.Default.Language, contentDescription = null, tint = colors.primary)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = L10n.SUPPORTED[L10n.lang] ?: L10n.lang,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = colors.text
+                            )
+                        }
+                        Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null, tint = colors.text)
+                    }
+                    DropdownMenu(
+                        expanded = languageExpanded,
+                        onDismissRequest = { languageExpanded = false }
+                    ) {
+                        L10n.SUPPORTED.forEach { (code, nativeName) ->
+                            DropdownMenuItem(
+                                text = { Text(nativeName) },
+                                onClick = {
+                                    languageExpanded = false
+                                    prefs.setLanguage(code)
+                                    L10n.setLanguage(context, code)
+                                    // Bildirim kanalı adı ve widget metinleri yeni dile güncellensin
+                                    PrayerNotificationHelper(context)
+                                    PrayerWidgetProvider.updateAllWidgets(context)
+                                }
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Lisans: Türkçe -> GPLv3_TR.html, diğer tüm diller -> GPLv3_EN.html
+                Button(
+                    onClick = { showLicense = true },
+                    colors = ButtonDefaults.buttonColors(containerColor = colors.primary),
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(imageVector = Icons.Default.Description, contentDescription = null)
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(text = L10n.t("s_license"))
+                }
+            }
+        }
+
         Spacer(modifier = Modifier.height(20.dp))
 
         // Hakkında
         Text(
-            text = "PyVakitci Mobil v1.8 • Diyanet İşleri Başkanlığı",
+            text = L10n.t("s_footer"),
             fontSize = 11.sp,
             color = colors.text.copy(alpha = 0.5f),
             modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -401,3 +496,60 @@ fun SettingsScreen(
     }
 }
 
+/**
+ * Uygulama içi lisans görüntüleyici.
+ * Seçili dil Türkçe ise assets/GPLv3_TR.html, diğer tüm dillerde assets/GPLv3_EN.html gösterilir.
+ */
+@Composable
+private fun LicenseDialog(colors: AppColors, onDismiss: () -> Unit) {
+    val licenseFile = L10n.licenseAssetFile()
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = colors.surface),
+            modifier = Modifier
+                .fillMaxWidth(0.95f)
+                .fillMaxHeight(0.9f)
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = L10n.t("s_license"),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.primary
+                    )
+                    TextButton(onClick = onDismiss) {
+                        Text(text = L10n.t("s_close"), color = colors.primary)
+                    }
+                }
+                AndroidView(
+                    factory = { ctx ->
+                        android.webkit.WebView(ctx).apply {
+                            settings.javaScriptEnabled = false
+                            settings.builtInZoomControls = true
+                            settings.displayZoomControls = false
+                            loadUrl("file:///android_asset/$licenseFile")
+                        }
+                    },
+                    update = { web ->
+                        val target = "file:///android_asset/$licenseFile"
+                        if (web.url != target) web.loadUrl(target)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+            }
+        }
+    }
+}

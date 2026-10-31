@@ -1,4 +1,5 @@
 #include "Dialogs.h"
+#include "Localization.h"
 #include <QHeaderView>
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -16,7 +17,7 @@ AylikVakitlerDialog::AylikVakitlerDialog(const QString& dbYolu, QWidget* parent)
     resize(720, 550);
     setMinimumSize(720, 550);
     setMaximumSize(720, 550);
-    setWindowTitle("Aylık Namaz Vakitleri");
+    setWindowTitle(Localization::tr("aylik_vakitler"));
     setWindowIcon(QIcon(":/resimler/cami.png"));
 
     QFont font("Arial", 10);
@@ -63,7 +64,7 @@ AylikVakitlerDialog::AylikVakitlerDialog(const QString& dbYolu, QWidget* parent)
         return;
     }
 
-    QStringList headers = {"Lokasyon", "Tarih", "İmsak", "Güneş", "Öğle", "İkindi", "Akşam", "Yatsı"};
+    QStringList headers = {Localization::tr("sehir"), Localization::tr("tarih"), Localization::tr("imsak"), Localization::tr("gunes"), Localization::tr("ogle"), Localization::tr("ikindi"), Localization::tr("aksam"), Localization::tr("yatsi")};
     m_model = new QStandardItemModel(rows.size(), 8, this);
     m_model->setHorizontalHeaderLabels(headers);
 
@@ -95,7 +96,7 @@ HakkindaDialog::HakkindaDialog(QWidget* parent)
     resize(418, 231);
     setMinimumSize(418, 231);
     setMaximumSize(418, 231);
-    setWindowTitle("Hakkında");
+    setWindowTitle(Localization::tr("hakkinda"));
     setWindowIcon(QIcon(":/resimler/hakkinda.png"));
 
     QFont font("Arial", 10);
@@ -123,29 +124,27 @@ HakkindaDialog::HakkindaDialog(QWidget* parent)
     lbl1->setText(
         "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
         "<html><head><meta name=\"qrichtext\" content=\"1\" /></head><body style=\" font-family:'Arial'; font-size:10pt;\">\n"
-        "<p style=\" margin:0px;\"><span style=\" font-size:9pt;\">Diyanet İşleri Başkanlığı'nın sunmuş olduğu namaz vakti bilgilerini kullanarak "
-        "namaz vakitlerini öğrenmenizi ve namaz vakitlerinde otomatik olarak ezan okunmasını sağlayan bir programdır.</span></p>\n"
+        "<p style=\" margin:0px;\"><span style=\" font-size:9pt;\">" + Localization::tr("hakkinda_aciklama") + "</span></p>\n"
         "<p style=\" margin-top:8px; margin-bottom:0px;\"><span style=\" font-size:9pt; font-weight:600;\">Web:</span>"
         "<span style=\" font-size:9pt;\"> </span><a href=\"https://github.com/rahmanyazgan/PyVakitci\">"
         "<span style=\" font-size:9pt; text-decoration: underline; color:#0000ff;\">PyVakitci Projesi</span></a></p></body></html>"
     );
     lbl1->setOpenExternalLinks(true);
-    tabWidget->addTab(tab1, "Hakkında");
+    tabWidget->addTab(tab1, Localization::tr("hakkinda"));
 
     QWidget* tab3 = new QWidget();
     QLabel* lbl3 = new QLabel(tab3);
     lbl3->setGeometry(14, 15, 365, 76);
     lbl3->setWordWrap(true);
     lbl3->setText(
-        "<html><head/><body><p><span style=\" font-size:9pt;\">Programda gördüğünüz hataları ve programın geliştirilmesine "
-        "yönelik önerilerinizi aşağıdaki e-posta adresine bildirebilirsiniz.</span></p>"
+        "<html><head/><body><p><span style=\" font-size:9pt;\">" + Localization::tr("oneri_sikayet") + "</span></p>"
         "<p><span style=\" font-size:9pt; font-weight:600;\">E-Posta:</span><span style=\" font-size:9pt;\"> </span>"
         "<a href=\"mailto:rahmanyazgan@gmail.com\"><span style=\" font-size:9pt; text-decoration: underline; color:#0000ff;\">rahmanyazgan@gmail.com</span></a></p></body></html>"
     );
     lbl3->setOpenExternalLinks(true);
-    tabWidget->addTab(tab3, "Hata Bildirimi ve Destek");
+    tabWidget->addTab(tab3, Localization::tr("bilgilendirme"));
 
-    QPushButton* kapatBtn = new QPushButton("Kapat", this);
+    QPushButton* kapatBtn = new QPushButton(Localization::tr("cikis"), this);
     kapatBtn->setGeometry(330, 196, 80, 28);
     QFont btnFont("Arial", 11);
     kapatBtn->setFont(btnFont);

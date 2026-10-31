@@ -9,6 +9,28 @@ public enum PrayerKind: String, CaseIterable, Identifiable, Codable {
     case yatsi = "Yatsı"
 
     public var id: String { rawValue }
+
+    public var localizedName: String {
+        switch self {
+        case .imsak: return LocalizationManager.shared.tr("p_imsak")
+        case .gunes: return LocalizationManager.shared.tr("p_gunes")
+        case .ogle: return LocalizationManager.shared.tr("p_ogle")
+        case .ikindi: return LocalizationManager.shared.tr("p_ikindi")
+        case .aksam: return LocalizationManager.shared.tr("p_aksam")
+        case .yatsi: return LocalizationManager.shared.tr("p_yatsi")
+        }
+    }
+
+    public var remainingSuffix: String {
+        switch self {
+        case .imsak: return LocalizationManager.shared.tr("rem_imsak")
+        case .gunes: return LocalizationManager.shared.tr("rem_gunes")
+        case .ogle: return LocalizationManager.shared.tr("rem_ogle")
+        case .ikindi: return LocalizationManager.shared.tr("rem_ikindi")
+        case .aksam: return LocalizationManager.shared.tr("rem_aksam")
+        case .yatsi: return LocalizationManager.shared.tr("rem_yatsi")
+        }
+    }
 }
 
 public struct PrayerTimes: Codable, Identifiable, Equatable {

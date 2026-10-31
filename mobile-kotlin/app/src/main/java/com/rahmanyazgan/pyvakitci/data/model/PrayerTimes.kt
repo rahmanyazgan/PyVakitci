@@ -1,4 +1,4 @@
-﻿package com.rahmanyazgan.pyvakitci.data.model
+package com.rahmanyazgan.pyvakitci.data.model
 
 data class PrayerTimes(
     val date: String,          // YYYY-MM-DD
@@ -39,22 +39,25 @@ val TR_LOCALE = java.util.Locale("tr", "TR")
 fun String.toTrUpper(): String = this.uppercase(TR_LOCALE)
 fun String.toTrLower(): String = this.lowercase(TR_LOCALE)
 
-enum class PrayerKind(val title: String, val uppercaseTitle: String) {
-    IMSAK("Sabah", "SABAH"),
-    GUNES("Güneş", "GÜNEŞ"),
-    OGLE("Öğle", "ÖĞLE"),
-    IKINDI("İkindi", "İKİNDİ"),
-    AKSAM("Akşam", "AKŞAM"),
-    YATSI("Yatsı", "YATSI");
+/**
+ * [title] dahili (Türkçe) anahtardır; ekranda gösterim için [localizedTitle] /
+ * [uppercaseTitle] seçili dile göre çevrilmiş metni döndürür.
+ */
+enum class PrayerKind(val title: String, private val nameKey: String, private val remainingKey: String) {
+    IMSAK("Sabah", "p_sabah", "rem_imsak"),
+    GUNES("Güneş", "p_gunes", "rem_gunes"),
+    OGLE("Öğle", "p_ogle", "rem_ogle"),
+    IKINDI("İkindi", "p_ikindi", "rem_ikindi"),
+    AKSAM("Akşam", "p_aksam", "rem_aksam"),
+    YATSI("Yatsı", "p_yatsi", "rem_yatsi");
 
-    fun getRemainingSuffix(): String = when (this) {
-        IMSAK -> "Sabah'a Kalan"
-        GUNES -> "Güneş'e Kalan"
-        OGLE -> "Öğle'ye Kalan"
-        IKINDI -> "İkindi'ye Kalan"
-        AKSAM -> "Akşam'a Kalan"
-        YATSI -> "Yatsı'ya Kalan"
-    }
+    val localizedTitle: String
+        get() = com.rahmanyazgan.pyvakitci.util.L10n.t(nameKey)
+
+    val uppercaseTitle: String
+        get() = com.rahmanyazgan.pyvakitci.util.L10n.upper(localizedTitle)
+
+    fun getRemainingSuffix(): String = com.rahmanyazgan.pyvakitci.util.L10n.t(remainingKey)
 }
 
 data class ActivePrayerInfo(

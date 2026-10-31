@@ -1,7 +1,9 @@
 import SwiftUI
+import WebKit
 
 public struct SettingsScreen: View {
     @ObservedObject public var themeManager: ThemeManager
+    @ObservedObject private var loc = LocalizationManager.shared
     public let countries: [Country]
     public let cities: [City]
     public let districts: [District]
@@ -14,6 +16,7 @@ public struct SettingsScreen: View {
     @State private var selectedDistrict: District
     @State private var savedAlert = false
     @State private var isLoading = false
+    @State private var showLicenseSheet = false
 
     public init(
         themeManager: ThemeManager,
@@ -45,19 +48,19 @@ public struct SettingsScreen: View {
 
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 20) {
-                Text("Bölgesel ve Genel Ayarlar")
+                Text(loc.tr("s_title"))
                     .font(.system(size: 22, weight: .bold))
                     .foregroundColor(colors.text)
 
                 // Bölgesel Konum Kartı
                 VStack(alignment: .leading, spacing: 14) {
                     HStack {
-                        Text("Konum Seçimi")
+                        Text(loc.tr("s_location"))
                             .font(.system(size: 16, weight: .bold))
                             .foregroundColor(colors.primary)
                         Spacer()
                         if isLoading {
-                            Text("Yükleniyor...")
+                            Text(loc.tr("s_loading"))
                                 .font(.system(size: 11, weight: .medium))
                                 .foregroundColor(colors.primary)
                         }
@@ -65,11 +68,11 @@ public struct SettingsScreen: View {
 
                     // Ülke
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Ülke")
+                        Text(loc.tr("s_country"))
                             .font(.system(size: 11))
                             .foregroundColor(colors.text.opacity(0.6))
 
-                        Picker("Ülke", selection: $selectedCountry) {
+                        Picker(loc.tr("s_country"), selection: $selectedCountry) {
                             ForEach(countries) { c in
                                 Text(c.name).tag(c)
                             }
@@ -99,11 +102,11 @@ public struct SettingsScreen: View {
 
                     // Şehir
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Şehir")
+                        Text(loc.tr("s_city"))
                             .font(.system(size: 11))
                             .foregroundColor(colors.text.opacity(0.6))
 
-                        Picker("Şehir", selection: $selectedCity) {
+                        Picker(loc.tr("s_city"), selection: $selectedCity) {
                             ForEach(currentCities) { ci in
                                 Text(ci.name).tag(ci)
                             }
@@ -129,11 +132,11 @@ public struct SettingsScreen: View {
 
                     // İlçe
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("İlçe")
+                        Text(loc.tr("s_district"))
                             .font(.system(size: 11))
                             .foregroundColor(colors.text.opacity(0.6))
 
-                        Picker("İlçe", selection: $selectedDistrict) {
+                        Picker(loc.tr("s_district"), selection: $selectedDistrict) {
                             ForEach(currentDistricts) { d in
                                 Text(d.name).tag(d)
                             }
@@ -160,7 +163,7 @@ public struct SettingsScreen: View {
                     }) {
                         HStack {
                             Image(systemName: "checkmark")
-                            Text("Konumu Kaydet ve Vakitleri Güncelle")
+                            Text(loc.tr("s_save_loc"))
                         }
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(.white)
@@ -171,7 +174,7 @@ public struct SettingsScreen: View {
                     }
 
                     if savedAlert {
-                        Text("Konum başarıyla kaydedildi!")
+                        Text(loc.tr("s_saved"))
                             .font(.system(size: 12, weight: .bold))
                             .foregroundColor(colors.primary)
                             .frame(maxWidth: .infinity, alignment: .center)
@@ -182,16 +185,62 @@ public struct SettingsScreen: View {
                 .cornerRadius(16)
                 .shadow(color: Color.black.opacity(0.03), radius: 3, y: 1)
 
+                // Dil Seçimi (Language)
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(loc.tr("s_language"))
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundColor(colors.primary)
+
+                    ForEach(LocalizationManager.supportedLanguages, id: \.code) { item in
+                        Button(action: {
+                            loc.setLanguage(item.code)
+                        }) {
+                            HStack {
+                                Image(systemName: loc.currentLanguage == item.code ? "largecircle.fill.circle" : "circle")
+                                    .foregroundColor(loc.currentLanguage == item.code ? colors.primary : colors.text.opacity(0.4))
+                                Text(item.name)
+                                    .font(.system(size: 14, weight: loc.currentLanguage == item.code ? .semibold : .regular))
+                                    .foregroundColor(colors.text)
+                                Spacer()
+                            }
+                            .padding(.vertical, 4)
+                        }
+                    }
+
+                    Divider()
+                        .padding(.vertical, 4)
+
+                    // Lisans Butonu (Türkçe -> GPLv3_TR.html, diğer tüm diller -> GPLv3_EN.html)
+                    Button(action: {
+                        showLicenseSheet = true
+                    }) {
+                        HStack {
+                            Image(systemName: "doc.text")
+                            Text(loc.tr("s_license"))
+                        }
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .background(colors.primary)
+                        .cornerRadius(10)
+                    }
+                }
+                .padding(16)
+                .background(colors.surface)
+                .cornerRadius(16)
+                .shadow(color: Color.black.opacity(0.03), radius: 3, y: 1)
+
                 // Arayüz Modu Seçimi
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Arayüz Modu")
+                    Text(loc.tr("s_ui_mode"))
                         .font(.system(size: 16, weight: .bold))
                         .foregroundColor(colors.primary)
 
                     let modes = [
-                        ("saat", "Kadranlı Vakit Saati (Varsayılan)"),
-                        ("gokyuzu", "Dinamik Gökyüzü Modu"),
-                        ("kartlar", "Modern Kartlar Modu")
+                        ("saat", loc.tr("mode_saat")),
+                        ("gokyuzu", loc.tr("mode_gokyuzu")),
+                        ("kartlar", loc.tr("mode_kartlar"))
                     ]
 
                     ForEach(modes, id: \.0) { item in
@@ -217,16 +266,16 @@ public struct SettingsScreen: View {
 
                 // Renk Teması Seçimi
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Renk Teması")
+                    Text(loc.tr("s_theme"))
                         .font(.system(size: 16, weight: .bold))
                         .foregroundColor(colors.primary)
 
                     let themes = [
-                        ("varsayilan", "Açık Tema (Varsayılan)"),
-                        ("koyu", "Modern Koyu Tema"),
-                        ("gece_mavisi", "Gece Mavisi"),
-                        ("zumrut", "Zümrüt Yeşili"),
-                        ("kehribar", "Sıcak Kehribar")
+                        ("varsayilan", loc.tr("th_varsayilan")),
+                        ("koyu", loc.tr("th_koyu")),
+                        ("gece_mavisi", loc.tr("th_gece_mavisi")),
+                        ("zumrut", loc.tr("th_zumrut")),
+                        ("kehribar", loc.tr("th_kehribar"))
                     ]
 
                     ForEach(themes, id: \.0) { item in
@@ -251,7 +300,7 @@ public struct SettingsScreen: View {
                 .shadow(color: Color.black.opacity(0.03), radius: 3, y: 1)
 
                 // Hakkında
-                Text("PyVakitci iOS v1.8 • Diyanet İşleri Başkanlığı")
+                Text(loc.tr("s_footer"))
                     .font(.system(size: 11))
                     .foregroundColor(colors.text.opacity(0.5))
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -260,6 +309,46 @@ public struct SettingsScreen: View {
             .padding(16)
         }
         .background(colors.background.ignoresSafeArea())
+        .sheet(isPresented: $showLicenseSheet) {
+            LicenseSheetView(colors: colors, licenseFileName: loc.getLicenseFileName())
+        }
     }
 }
 
+/// Uygulama içi lisans görüntüleyici (Türkçe için GPLv3_TR.html, diğer tüm diller için GPLv3_EN.html).
+struct LicenseSheetView: View {
+    @Environment(\.presentationMode) var presentationMode
+    public let colors: AppThemeColors
+    public let licenseFileName: String
+
+    var body: some View {
+        NavigationView {
+            LicenseWebView(fileName: licenseFileName)
+                .navigationTitle(LocalizationManager.shared.tr("s_license"))
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button(LocalizationManager.shared.tr("s_close")) {
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                    }
+                }
+        }
+    }
+}
+
+struct LicenseWebView: UIViewRepresentable {
+    let fileName: String
+
+    func makeUIView(context: Context) -> WKWebView {
+        let webView = WKWebView()
+        let name = (fileName as NSString).deletingPathExtension
+        let ext = (fileName as NSString).pathExtension
+        if let url = Bundle.main.url(forResource: name, withExtension: ext) {
+            webView.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
+        }
+        return webView
+    }
+
+    func updateUIView(_ uiView: WKWebView, context: Context) {}
+}

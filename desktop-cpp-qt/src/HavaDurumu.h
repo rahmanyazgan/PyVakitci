@@ -16,6 +16,8 @@ struct GunlukTahmin {
     int tMax = 0;
     int tMin = 0;
     int yagis = 0;
+    int wmoKodu = 0;
+    int dayOfWeek = 1;
 };
 
 struct HavaVerisi {
@@ -24,6 +26,7 @@ struct HavaVerisi {
     int nem = 0;
     int ruzgar = 0;
     bool gunduzMu = true;
+    int wmoKodu = 0;
     QString durum;
     QString tip;
     QVector<GunlukTahmin> gunluk;
@@ -61,6 +64,7 @@ public:
     void konumAyarla(const QString& ulke, const QString& sehir, const QString& ilce, const QString& tema = "varsayilan", bool zorla = false);
     void temaAyarla(const QString& tema);
     void animasyonAdimi();
+    void retranslateUi();
 
 public slots:
     void havaDurumunuGuncelle(bool zorla = false);

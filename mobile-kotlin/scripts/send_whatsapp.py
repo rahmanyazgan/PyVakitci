@@ -238,58 +238,130 @@ def send_apk_to_whatsapp(apk_path: str, recipient: str = "@rahmanyazgan"):
             pass
 
         print("  -> Ctrl+V iletildi, onizleme ekrani bekleniyor...")
+        time.sleep(2.5)
+
+        # 5. Onizleme ekraninda Enter ve Gonder butonu ile gonderim
+        print("[5/5] Onizleme ekrani hazir, 2-3 saniye beklenip Enter / Gonder iletiliyor...")
         time.sleep(2.0)
 
-        # 5. Yesil Gonder Butonunu Temizce Tetikle
-        print("[5/5] Onizleme ekrani hazir, Gonder butonuna basiliyor...")
-        time.sleep(1.5)
-
-        send_clicked = False
-        try:
-            # WhatsApp onizleme ekranindaki yesil gonder (send) butonunu tikla
-            send_clicked = driver.execute_script("""
-                var btn = document.querySelector("span[data-icon='send']") ||
-                          document.querySelector("div[aria-label='Gönder']") ||
-                          document.querySelector("button[aria-label='Gönder']") ||
-                          document.querySelector("[data-icon='send']");
-                if (btn) {
-                    var clickable = btn.closest("button") || btn.closest("[role='button']") || btn.parentElement || btn;
-                    clickable.click();
-                    return true;
-                }
-                return false;
-            """)
-        except Exception:
-            send_clicked = False
-
-        # Eger butona tiklanamadiysa yalnizca o zaman yedek olarak Enter dene
-        if not send_clicked:
+        def press_enter_and_click_send():
+            # 1. Windows API keybd_event (Enter tusu: VK_RETURN = 0x0D)
             try:
-                active_el = driver.switch_to.active_element
-                active_el.send_keys(Keys.ENTER)
+                user32 = ctypes.windll.user32
+                user32.keybd_event(0x0D, 0, 0, 0)
+                time.sleep(0.08)
+                user32.keybd_event(0x0D, 0, 2, 0)
             except Exception:
                 pass
 
-        print("[...] Gonderim onaylandi, dosya WhatsApp sunucularina aktariliyor...")
-
-        # Onizleme modalinin kapanmasini ve dosyanin soket uzerinden iletilmesini bekle
-        for _ in range(10):
-            time.sleep(0.5)
+            # 2. Selenium ActionChains Enter
             try:
-                preview = driver.find_elements(By.XPATH, "//span[@data-icon='send']")
-                if not preview:
+                ActionChains(driver).send_keys(Keys.ENTER).perform()
+            except Exception:
+                pass
+
+            # 3. Active element Enter
+            try:
+                driver.switch_to.active_element.send_keys(Keys.ENTER)
+            except Exception:
+                pass
+
+            # 4. JS ile yesil gonder butonunu bul ve tikla
+            try:
+                driver.execute_script("""
+                    var selectors = [
+                        "span[data-icon='send']",
+                        "span[data-icon='wds-ic-send']",
+                        "span[data-icon='send-refreshed']",
+                        "span[data-icon='send-light']",
+                        "[data-icon*='send']",
+                        "div[aria-label='Gönder']",
+                        "button[aria-label='Gönder']",
+                        "div[aria-label='Send']",
+                        "button[aria-label='Send']",
+                        "[aria-label*='nder']",
+                        "[data-testid*='send']",
+                        "[role='button'][aria-label*='nder']"
+                    ];
+                    for (var i = 0; i < selectors.length; i++) {
+                        var el = document.querySelector(selectors[i]);
+                        if (el) {
+                            var target = el.closest("button") || el.closest("[role='button']") || el.parentElement || el;
+                            ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click'].forEach(function(evName) {
+                                target.dispatchEvent(new MouseEvent(evName, { bubbles: true, cancelable: true, view: window }));
+                            });
+                            try { target.click(); } catch(e) {}
+                            return true;
+                        }
+                    }
+                    return false;
+                """)
+            except Exception:
+                pass
+
+        # Ilk gonderim denemesi (Enter ve Buton)
+        press_enter_and_click_send()
+        time.sleep(2.0)
+
+        # Eger onizleme ekrani hala aciksa tekrar Enter gonder
+        for retry in range(3):
+            try:
+                still_open = driver.execute_script("""
+                    var btn = document.querySelector("span[data-icon='send'], [data-icon*='send'], [aria-label*='nder'], [aria-label*='Send']");
+                    return (btn !== null);
+                """)
+                if not still_open:
                     break
             except Exception:
                 break
+            time.sleep(1.0)
+            press_enter_and_click_send()
+            time.sleep(1.5)
 
-        # Dosya soket transferinin guvenle tamamlanmasi icin bekleme
-        time.sleep(5.0)
+        print("[...] Gonderim iletildi, dosya WhatsApp sunucularina yukleniyor...")
+        print("      (30 MB dosya icin yukleme tamamlana kadar bekleniyor...)")
+
+        # 30 MB dosya yuklemesi icin bekleme dongusu (maksimum 120 saniye)
+        upload_start = time.time()
+        upload_completed = False
+        while time.time() - upload_start < 120:
+            time.sleep(2.0)
+            elapsed = int(time.time() - upload_start)
+
+            try:
+                status = driver.execute_script("""
+                    // Onay tikleri: msg-check (tek tik), msg-dblcheck (cift tik)
+                    var checks = document.querySelectorAll("span[data-icon='msg-check'], span[data-icon='msg-dblcheck'], span[data-icon='msg-dblcheck-ack']");
+                    // Devam eden yukleme / saat simgesi
+                    var loading = document.querySelectorAll("span[data-icon='msg-time'], span[data-icon='status-time'], [data-icon*='progress']");
+                    
+                    if (checks.length > 0) return "sent";
+                    if (loading.length > 0) return "uploading";
+                    return "waiting";
+                """)
+
+                if status == "sent":
+                    upload_completed = True
+                    print(f"  -> Dosya WhatsApp sunucularina basariyla iletildi ({elapsed} sn).")
+                    break
+                elif status == "uploading":
+                    if elapsed % 6 == 0:
+                        print(f"  -> Dosya yukleniyor... ({elapsed} sn)")
+                else:
+                    # 15 sn gectikten sonra loading yoksa tamamlanmis kabul edilir
+                    if elapsed > 15:
+                        upload_completed = True
+                        break
+            except Exception:
+                break
+
+        time.sleep(3.0)
 
         print(f"\n========================================================")
         print(f"[BASARILI] {os.path.basename(abs_apk_path)} WhatsApp uzerinden")
         print(f"{recipient} sohbetine basariyla iletildi!")
         print(f"========================================================\n")
-        time.sleep(1.0)
+        time.sleep(2.0)
         return True
 
     except Exception as e:

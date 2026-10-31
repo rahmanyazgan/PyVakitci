@@ -3,6 +3,7 @@ package com.rahmanyazgan.pyvakitci.data.local
 import android.content.Context
 import android.content.SharedPreferences
 import com.rahmanyazgan.pyvakitci.data.model.SelectedLocation
+import com.rahmanyazgan.pyvakitci.util.L10n
 
 class PreferencesManager(context: Context) {
     private val prefs: SharedPreferences =
@@ -63,6 +64,14 @@ class PreferencesManager(context: Context) {
     var theme: String
         get() = prefs.getString(KEY_THEME, "varsayilan") ?: "varsayilan"
         set(value) = prefs.edit().putString(KEY_THEME, value).apply()
+
+    /** Uygulama dili (tr, en, de, zh, ja, ru). Kayıt yoksa sistem dili algılanır. */
+    fun getLanguage(): String =
+        prefs.getString(L10n.KEY_LANGUAGE, null) ?: L10n.detectSystemLanguage()
+
+    fun setLanguage(lang: String) {
+        prefs.edit().putString(L10n.KEY_LANGUAGE, lang).apply()
+    }
 
     var isWarningSoundEnabled: Boolean
         get() = prefs.getBoolean(KEY_WARNING_SOUND, true)
@@ -141,17 +150,8 @@ class PreferencesManager(context: Context) {
         val customName = prefs.getString(PREFIX_AZAN_DISPLAY_NAME + key, null)
         if (!customName.isNullOrEmpty()) return customName
         val sound = getPrayerSound(key)
-        return when (sound) {
-            "sabah_saba" -> "Sabah (Saba Makamı)"
-            "ogle_rast" -> "Öğle (Rast Makamı)"
-            "ikindi_hicaz" -> "İkindi (Hicaz Makamı)"
-            "aksam_segah" -> "Akşam (Segah Makamı)"
-            "yatsi_ussak" -> "Yatsı (Uşşak Makamı)"
-            "ezan_duasi" -> "Ezan Duası"
-            "sela" -> "Cuma Selası"
-            "uyari" -> "Kısa Uyarı Sesi"
-            else -> sound.substringAfterLast("/")
-        }
+        // Yerleşik sesler seçili dile çevrilir (L10n), diğerleri dosya adıyla gösterilir
+        return L10n.soundName(sound) ?: sound.substringAfterLast("/")
     }
 
     fun setPrayerSoundCustom(prayerName: String, filePath: String, displayName: String) {

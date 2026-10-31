@@ -28,6 +28,10 @@ from moduller.HavaDurumu import HavaDurumuWidget
 from moduller.Temalar import TEMALAR
 from moduller.Ui_PyVakitci import Ui_MainWindow
 from moduller.VakitGorselleri import VakitSaatiWidget, GokyuzuWidget
+from moduller.Localization import (
+    set_language, get_language, tr, get_license_file, detect_system_language,
+    LANGUAGES, format_current_prayer, format_remaining_time, format_remaining_short
+)
 
 class PyVakitci(QtWidgets.QMainWindow, Ui_MainWindow):
     calismaDizini = ""
@@ -47,9 +51,9 @@ class PyVakitci(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.player = QtMultimedia.QMediaPlayer()
         
+        self.degiskenleriHazirla()
         self.modernArayuzuHazirla()
         self.ayarlarVeHavaDurumuSekmeleriniHazirla()
-        self.degiskenleriHazirla()
         self.sinyalleriEkle()
         self.fusionGorunumu()
         self.calismaDizininiHazirla()
@@ -57,6 +61,7 @@ class PyVakitci(QtWidgets.QMainWindow, Ui_MainWindow):
         self.ekrandaOrtala()
         self.sesVarsayilanAyarlar()
         self.ayarlariUygula()
+        self.retranslateUiDynamic()
         self.trayIconGoster()
         self.hicriTarihiGuncelle()
         self.otomatikGuncellestir()
@@ -97,10 +102,14 @@ class PyVakitci(QtWidgets.QMainWindow, Ui_MainWindow):
         self.settings = QtCore.QSettings(self.ayarDosyasi, QtCore.QSettings.IniFormat)
         self.settingsVarsayilan = QtCore.QSettings(self.ontanimliAyarDosyasi, QtCore.QSettings.IniFormat)
        
+        saved_lang = self.settings.value("Ayarlar/dil", detect_system_language())
+        set_language(saved_lang)
+        self.dil = saved_lang
+
         PyVakitci.diyanetUlkeler = DiyanetUlkeler()
         self.winampKontrol = Clever(self.programinKonumu)
        
-        self.lisansDosyasi = str(self.programinKonumu + "/GPLv3_TR.html")
+        self.lisansDosyasi = get_license_file(self.programinKonumu)
         self.besmeleDosyasi = self.sesDosyalariKonum + "besmele.mp3"
 
         self.simdikiTarih = QtCore.QDate().currentDate().toString("dd MMMM yyyy")
@@ -596,16 +605,17 @@ class PyVakitci(QtWidgets.QMainWindow, Ui_MainWindow):
         self.besmele_ile_basla_checkBox.setGeometry(QtCore.QRect(10, 132, 285, 22))
         self.stopify_duraklat_checkBox.setGeometry(QtCore.QRect(10, 156, 137, 22))
         self.winamp_duraklat_checkBox.setGeometry(QtCore.QRect(153, 156, 141, 22))
-        self.erken_uyari_checkBox.setGeometry(QtCore.QRect(10, 180, 285, 22))
+        self.erken_uyari_checkBox.setGeometry(QtCore.QRect(10, 180, 225, 22))
         self.erken_uyari_spinBox.setGeometry(QtCore.QRect(240, 181, 42, 21))
-        self.erken_uyari_sela_checkBox.setGeometry(QtCore.QRect(10, 204, 285, 22))
+        self.erken_uyari_sela_checkBox.setGeometry(QtCore.QRect(10, 204, 225, 22))
         self.erken_uyari_sela_spinBox.setGeometry(QtCore.QRect(240, 205, 42, 21))
-        self.hicri_gun_ekle_checkBox.setGeometry(QtCore.QRect(10, 228, 285, 22))
+        self.hicri_gun_ekle_checkBox.setGeometry(QtCore.QRect(10, 228, 225, 22))
         self.hicri_tarih_gun_ekle_spinBox.setGeometry(QtCore.QRect(240, 228, 42, 21))
         self.vakitleri_goster_pushButton.setGeometry(QtCore.QRect(21, 254, 263, 25))
         self.vakitleri_guncelle_pushButton.setGeometry(QtCore.QRect(21, 283, 263, 25))
-        self.ayarlar_varsayilan_pushButton.setGeometry(QtCore.QRect(110, 313, 85, 27))
-        self.ayarlar_kaydet_pushButton.setGeometry(QtCore.QRect(200, 313, 85, 27))
+
+        self.ayarlar_varsayilan_pushButton.setGeometry(QtCore.QRect(15, 313, 126, 27))
+        self.ayarlar_kaydet_pushButton.setGeometry(QtCore.QRect(155, 313, 126, 27))
 
         # Bölgesel Ayarlar içindeki etiket, açılır kutu ve buton yerleşimi
         self.bolgesel_ayarlar_ulke_label.setGeometry(QtCore.QRect(15, 28, 65, 23))
@@ -614,8 +624,25 @@ class PyVakitci(QtWidgets.QMainWindow, Ui_MainWindow):
         self.sehirler_comboBox.setGeometry(QtCore.QRect(80, 70, 205, 28))
         self.bolgesel_ayarlar_ilce_label.setGeometry(QtCore.QRect(15, 118, 65, 23))
         self.ilceler_comboBox.setGeometry(QtCore.QRect(80, 115, 205, 28))
-        self.bolgesel_ayarlar_varsayilan_pushButton.setGeometry(QtCore.QRect(110, 313, 85, 27))
-        self.bolgesel_ayarlar_kaydet_pushButton.setGeometry(QtCore.QRect(200, 313, 85, 27))
+
+        self.bolgesel_ayarlar_dil_label = QtWidgets.QLabel(self.bolgesel_ayarlar_groupBox)
+        self.bolgesel_ayarlar_dil_label.setGeometry(QtCore.QRect(15, 163, 65, 23))
+        self.bolgesel_ayarlar_dil_label.setFont(QtGui.QFont("Arial", 10))
+        self.bolgesel_ayarlar_dil_label.setObjectName("bolgesel_ayarlar_dil_label")
+        self.bolgesel_ayarlar_dil_label.setText(tr("dil"))
+
+        self.dil_comboBox = QtWidgets.QComboBox(self.bolgesel_ayarlar_groupBox)
+        self.dil_comboBox.setGeometry(QtCore.QRect(80, 160, 205, 28))
+        self.dil_comboBox.setFont(QtGui.QFont("Arial", 9))
+        self.dil_comboBox.setObjectName("dil_comboBox")
+        for code, name in LANGUAGES.items():
+            self.dil_comboBox.addItem(name, code)
+        idx = list(LANGUAGES.keys()).index(self.dil) if self.dil in LANGUAGES else 0
+        self.dil_comboBox.setCurrentIndex(idx)
+        self.dil_comboBox.currentIndexChanged.connect(self.dilDegisti)
+
+        self.bolgesel_ayarlar_varsayilan_pushButton.setGeometry(QtCore.QRect(15, 313, 126, 27))
+        self.bolgesel_ayarlar_kaydet_pushButton.setGeometry(QtCore.QRect(155, 313, 126, 27))
 
         self._ayarAltSekmeDegistir(0)
 
@@ -625,11 +652,11 @@ class PyVakitci(QtWidgets.QMainWindow, Ui_MainWindow):
         self.havaDurumuWidget.show()
 
         self.tabWidget.setTabIcon(1, self._havaDurumuIkonuOlustur())
-        self.tabWidget.setTabToolTip(0, "Namaz Vakitleri")
-        self.tabWidget.setTabToolTip(1, "Hava Durumu")
-        self.tabWidget.setTabToolTip(2, "Ayarlar (Genel & Bölgesel)")
-        self.tabWidget.setTabToolTip(3, "Ses Ayarları")
-        self.tabWidget.setTabToolTip(4, "Yararlı Siteler")
+        self.tabWidget.setTabToolTip(0, tr("tab_saat"))
+        self.tabWidget.setTabToolTip(1, tr("tab_hava"))
+        self.tabWidget.setTabToolTip(2, tr("tab_ayarlar"))
+        self.tabWidget.setTabToolTip(3, tr("tab_ses"))
+        self.tabWidget.setTabToolTip(4, tr("tab_linkler"))
 
     def _ayarAltSekmeDegistir(self, indeks):
         if indeks == 0:
@@ -1074,7 +1101,8 @@ class PyVakitci(QtWidgets.QMainWindow, Ui_MainWindow):
         self.saat_label.setText("Saat: " + self.saat)
         self.modern_saat_label.setText(self.saat)
 
-        self.tarih = QtCore.QDate().currentDate().toString("d MMMM yyyy")
+        loc = QtCore.QLocale(get_language())
+        self.tarih = loc.toString(QtCore.QDate.currentDate(), "d MMMM yyyy")
         self.miladi_tarih.setText(self.tarih)
         self.modern_miladi_label.setText(self.tarih)
         self._gorselVerileriGuncelle()
@@ -1097,9 +1125,21 @@ class PyVakitci(QtWidgets.QMainWindow, Ui_MainWindow):
         ay = hedefTarih.month()
         gun = hedefTarih.day()
 
-        self.hicriAylar = ["Muharrem", "Safer", "Rebiülevvel", "Rebiülahir",
-                           "Cemaziyelevvel", "Cemaziyelahir", "Receb", "Şaban",
-                           "Ramazan", "Şevval", "Zilkade", "Zilhicce"]
+        hicri_aylar_map = {
+            "tr": ["Muharrem", "Safer", "Rebiülevvel", "Rebiülahir", "Cemaziyelevvel", "Cemaziyelahir",
+                   "Receb", "Şaban", "Ramazan", "Şevval", "Zilkade", "Zilhicce"],
+            "en": ["Muharram", "Safar", "Rabi' I", "Rabi' II", "Jumada I", "Jumada II",
+                   "Rajab", "Sha'ban", "Ramadan", "Shawwal", "Dhu al-Qi'dah", "Dhu al-Hijjah"],
+            "de": ["Muharram", "Safar", "Rabi' I", "Rabi' II", "Dschumada I", "Dschumada II",
+                   "Radschab", "Scha'ban", "Ramadan", "Schawwal", "Dhu l-qa'da", "Dhu l-hiddscha"],
+            "ru": ["Мухаррам", "Сафар", "Раби аль-авваль", "Раби ас-сани", "Джумада аль-уля", "Джумада ас-сания",
+                   "Раджаб", "Шабан", "Рамадан", "Шавваль", "Зу-ль-када", "Зу-ль-хиджа"],
+            "zh": ["穆哈兰姆月", "色法尔月", "赖比尔·敖外鲁月", "赖比尔·阿色尼月", "主马达·敖外鲁月", "主马达·阿色尼月",
+                   "热哲卜月", "舍尔邦月", "赖买丹月", "闪瓦鲁月", "都尔喀尔德月", "都尔黑哲月"],
+            "ja": ["ムハッラム", "サファル", "ラビー・アル＝アウワル", "ラビー・アッ＝サーニー", "ジュマーダー・アル＝ウーラー", "ジュマーダー・アッ＝サーニー",
+                   "ラジャブ", "シャアバーン", "ラマダーン", "シャウワール", "ズー・アル＝カアダ", "ズー・アル＝ヒッジャ"]
+        }
+        self.hicriAylar = hicri_aylar_map.get(get_language(), hicri_aylar_map["tr"])
 
         self.calverter = Calverter()
         jd = self.calverter.gregorian_to_jd(yil, ay, gun)
@@ -1619,7 +1659,7 @@ class PyVakitci(QtWidgets.QMainWindow, Ui_MainWindow):
         self.saatDakika = saatDakika
        
         if len(Vakitler.saatler) != 0:
-            self.statusbar.showMessage("Kaynak: diyanet.gov.tr")
+            self.statusbar.showMessage(tr("kaynak"))
            
             self.gunlukVakitleriKaydet()
            
@@ -1627,57 +1667,58 @@ class PyVakitci(QtWidgets.QMainWindow, Ui_MainWindow):
                 if "00:00" <= saatDakika < Vakitler.imsak:
                     self.labelVeriler(Vakitler.imsak, Vakitler.gunes, Vakitler.ogle, Vakitler.ikindi,
                                       Vakitler.aksam, "<font color='#FF0000'>" + Vakitler.yatsi + "</font>",
-                                      "Şimdi Yatsı Vakti", "İmsak'a Kalan Süre :", "yatsı")
+                                      format_current_prayer("yatsi"), format_remaining_time("imsak"), "yatsı")
 
                 if Vakitler.imsak <= saatDakika < Vakitler.gunes:
                     self.labelVeriler("<font color='#FF0000'>" + Vakitler.imsak + "</font>", Vakitler.gunes,
                                       Vakitler.ogle, Vakitler.ikindi, Vakitler.aksam, Vakitler.yatsi,
-                                      "Şimdi İmsak Vakti", "Güneş'e Kalan Süre :", "sabah")
+                                      format_current_prayer("imsak"), format_remaining_time("gunes"), "sabah")
 
                     self.diniGunleriHatirlat()
 
-                    self.vakitKontrol("Namaz Vakti", self.sabah_lineEdit.text(), self.imsak_saat_label.text(), "sabah")
+                    self.vakitKontrol(tr("namaz_vakitleri_tray"), self.sabah_lineEdit.text(), self.imsak_saat_label.text(), "sabah")
 
                 if Vakitler.gunes <= saatDakika < Vakitler.ogle:
                     self.labelVeriler(Vakitler.imsak, "<font color='#FF0000'>" + Vakitler.gunes + "</font>",
                                       Vakitler.ogle, Vakitler.ikindi, Vakitler.aksam, Vakitler.yatsi,
-                                      "Şimdi Güneş Vakti", "Öğle'ye Kalan Süre :", "güneş")
+                                      format_current_prayer("gunes"), format_remaining_time("ogle"), "güneş")
 
                 if Vakitler.ogle <= saatDakika < Vakitler.ikindi:
                     self.labelVeriler(Vakitler.imsak, Vakitler.gunes, "<font color='#FF0000'>" + Vakitler.ogle + "</font>",
-                                      Vakitler.ikindi, Vakitler.aksam, Vakitler.yatsi, "Şimdi Öğle Vakti",
-                                      "İkindi'ye Kalan Süre :", "öğle")
+                                      Vakitler.ikindi, Vakitler.aksam, Vakitler.yatsi,
+                                      format_current_prayer("ogle"), format_remaining_time("ikindi"), "öğle")
 
                     self.diniGunleriHatirlat()
 
-                    self.vakitKontrol("Namaz Vakti", self.ogle_lineEdit.text(), self.ogle_saat_label.text(), "öğle")
+                    self.vakitKontrol(tr("namaz_vakitleri_tray"), self.ogle_lineEdit.text(), self.ogle_saat_label.text(), "öğle")
 
                 if Vakitler.ikindi <= saatDakika < Vakitler.aksam:
                     self.labelVeriler(Vakitler.imsak, Vakitler.gunes, Vakitler.ogle,
                                       "<font color='#FF0000'>" + Vakitler.ikindi + "</font>", Vakitler.aksam,
-                                      Vakitler.yatsi, "Şimdi İkindi Vakti", "Akşam'a Kalan Süre :", "ikindi")
+                                      Vakitler.yatsi,
+                                      format_current_prayer("ikindi"), format_remaining_time("aksam"), "ikindi")
 
                     self.diniGunleriHatirlat()
 
-                    self.vakitKontrol("Namaz Vakti", self.ikindi_lineEdit.text(), self.ikindi_saat_label.text(), "ikindi")
+                    self.vakitKontrol(tr("namaz_vakitleri_tray"), self.ikindi_lineEdit.text(), self.ikindi_saat_label.text(), "ikindi")
 
                 if Vakitler.aksam <= saatDakika < Vakitler.yatsi:
                     self.labelVeriler(Vakitler.imsak, Vakitler.gunes, Vakitler.ogle, Vakitler.ikindi,
                                       "<font color='#FF0000'>" + Vakitler.aksam + "</font>", Vakitler.yatsi,
-                                      "Şimdi Akşam Vakti", "Yatsı'ya Kalan Süre :", "akşam")
+                                      format_current_prayer("aksam"), format_remaining_time("yatsi"), "akşam")
 
                     self.diniGunleriHatirlat()
 
-                    self.vakitKontrol("Namaz Vakti", self.aksam_lineEdit.text(), self.aksam_saat_label.text(), "akşam")
+                    self.vakitKontrol(tr("namaz_vakitleri_tray"), self.aksam_lineEdit.text(), self.aksam_saat_label.text(), "akşam")
 
                 if Vakitler.yatsi <= saatDakika <= "23:59":
                     self.labelVeriler(Vakitler.imsak, Vakitler.gunes, Vakitler.ogle, Vakitler.ikindi,
                                       Vakitler.aksam, "<font color='#FF0000'>" + Vakitler.yatsi + "</font>",
-                                      "Şimdi Yatsı Vakti", "İmsak'a Kalan Süre :", "yatsı")
+                                      format_current_prayer("yatsi"), format_remaining_time("imsak"), "yatsı")
 
                     self.diniGunleriHatirlat()
 
-                    self.vakitKontrol("Namaz Vakti", self.yatsi_lineEdit.text(), self.yatsi_saat_label.text(), "yatsı")
+                    self.vakitKontrol(tr("namaz_vakitleri_tray"), self.yatsi_lineEdit.text(), self.yatsi_saat_label.text(), "yatsı")
             except ValueError:
                 pass
 
@@ -1809,8 +1850,8 @@ class PyVakitci(QtWidgets.QMainWindow, Ui_MainWindow):
             if toplamDakika == int(self.erken_uyari_spinBox.text()):
                 if self.erken_uyari_checkBox.isChecked():
                     if self.mesajGosterildi == False:
-                        self.trayIcon.showMessage("Erken Uyarı",
-                                                  self.sonraki_vakit_label.text() + " " + str(toplamDakika) + " Dakika",
+                        self.trayIcon.showMessage(tr("erken_uyari"),
+                                                  self.sonraki_vakit_label.text() + " " + str(toplamDakika) + " " + tr("dakika"),
                                                   self.trayIcon.Information, 20000)
                         self.mesajGosterildi = True
                         
@@ -1825,17 +1866,17 @@ class PyVakitci(QtWidgets.QMainWindow, Ui_MainWindow):
         self.trayIcon.showMessage(baslik, mesaj, self.trayIcon.Information, 20000)
 
     def vakitleriGoster(self):
-        self.mesajGoster("Namaz Vakitleri", self.vakitlerMesaj())
+        self.mesajGoster(tr("namaz_vakitleri_tray"), self.vakitlerMesaj())
 
     def vakitlerMesaj(self):
         try:
             yer = self.ilceler_comboBox.currentText() or self.sehirler_comboBox.currentText()
-            mesaj = yer + " için " + self.namazvakti.replace("Şimdi ", "") + \
-                    "\nİmsak: " + Vakitler.imsak + "\tGüneş: " + Vakitler.gunes + \
-                    "\nÖğle: " + Vakitler.ogle + "\tİkindi: " + Vakitler.ikindi + \
-                    "\nAkşam: " + Vakitler.aksam + "\tYatsı: " + Vakitler.yatsi
+            header = tr("vakitler_icin_fmt").replace("%1", yer).replace("%2", self.namazvakti)
+            mesaj = f"{header}\n{tr('imsak')}: {Vakitler.imsak}\t{tr('gunes')}: {Vakitler.gunes}" \
+                    f"\n{tr('ogle')}: {Vakitler.ogle}\t{tr('ikindi')}: {Vakitler.ikindi}" \
+                    f"\n{tr('aksam')}: {Vakitler.aksam}\t{tr('yatsi')}: {Vakitler.yatsi}"
         except AttributeError:
-            mesaj = "Namaz vakitleri alınamadı."
+            mesaj = tr("hava_hata")
 
         return mesaj
 
@@ -2095,10 +2136,174 @@ class PyVakitci(QtWidgets.QMainWindow, Ui_MainWindow):
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
 
     def lisans(self):
-        dosyaIsmi = self.lisansDosyasi[self.lisansDosyasi.rfind("/") + 1:]
-        dosyaKonumu = self.lisansDosyasi[:self.lisansDosyasi.rfind("/")]
-        os.chdir(dosyaKonumu)
-        self.siteAc(dosyaIsmi)
+        self.lisansDosyasi = get_license_file(self.programinKonumu)
+        if os.path.exists(self.lisansDosyasi):
+            QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(self.lisansDosyasi))
+        else:
+            self.siteAc(os.path.basename(self.lisansDosyasi))
+
+    def dilDegisti(self, index):
+        secili_kod = self.dil_comboBox.itemData(index)
+        if secili_kod and secili_kod != self.dil:
+            self.dil = secili_kod
+            set_language(self.dil)
+            self.settings.setValue("Ayarlar/dil", self.dil)
+            self.lisansDosyasi = get_license_file(self.programinKonumu)
+            self.retranslateUiDynamic()
+
+    def retranslateUiDynamic(self):
+        self.setWindowTitle(f"PyVakitci 1.8 - {tr('tab_saat')}")
+        self.tabWidget.setTabText(0, "")
+        self.tabWidget.setTabText(1, "")
+        self.tabWidget.setTabText(2, "")
+        self.tabWidget.setTabText(3, "")
+        self.tabWidget.setTabText(4, "")
+        self.tabWidget.setTabToolTip(0, tr("tab_saat"))
+        self.tabWidget.setTabToolTip(1, tr("tab_hava"))
+        self.tabWidget.setTabToolTip(2, tr("tab_ayarlar"))
+        self.tabWidget.setTabToolTip(3, tr("tab_ses"))
+        self.tabWidget.setTabToolTip(4, tr("tab_linkler"))
+
+        if hasattr(self, "btnGenelAyarlar") and self.btnGenelAyarlar:
+            self.btnGenelAyarlar.setText("⚙ " + tr("genel_ayarlar"))
+        if hasattr(self, "btnBolgeselAyarlar") and self.btnBolgeselAyarlar:
+            self.btnBolgeselAyarlar.setText("📍 " + tr("bolgesel_ayarlar"))
+
+        self.otomatik_calistir_checkBox.setText(tr("oto_calistir"))
+        if hasattr(self, "ikon_goster_checkBox"):
+            self.ikon_goster_checkBox.setText(tr("sistem_tepsisi_ikon"))
+        self.sistem_tepsisinde_baslat_checkBox.setText(tr("sistem_tepsisi"))
+        self.otomatik_guncellestir_checkBox.setText(tr("oto_guncelle"))
+        self.her_zaman_ustte_checkBox.setText(tr("her_zaman_ustte"))
+        self.besmele_ile_basla_checkBox.setText(tr("besmele_ile_basla"))
+        if hasattr(self, "stopify_duraklat_checkBox"):
+            self.stopify_duraklat_checkBox.setText(tr("spotify_duraklat"))
+        self.winamp_duraklat_checkBox.setText(tr("winamp_duraklat"))
+
+        if hasattr(self, "menuDosya"):
+            self.menuDosya.setTitle(tr("menu_dosya"))
+        if hasattr(self, "menuGorunum"):
+            self.menuGorunum.setTitle(tr("menu_gorunum"))
+        if hasattr(self, "menuTema"):
+            self.menuTema.setTitle(tr("menu_renk_temasi"))
+        if hasattr(self, "menuPencereStili"):
+            self.menuPencereStili.setTitle(tr("menu_pencere_stili"))
+        if hasattr(self, "menuYardim"):
+            self.menuYardim.setTitle(tr("menu_yardim"))
+
+        # Arayüz Modları
+        if hasattr(self, "actionVakitSaati"):
+            self.actionVakitSaati.setText(tr("mod_saat"))
+        if hasattr(self, "actionGokyuzu"):
+            self.actionGokyuzu.setText(tr("mod_gokyuzu"))
+        if hasattr(self, "actionModernKartlar"):
+            self.actionModernKartlar.setText(tr("mod_kartlar"))
+        if hasattr(self, "actionKlasikGorunum"):
+            self.actionKlasikGorunum.setText(tr("mod_klasik"))
+
+        # Tema Seçenekleri
+        for t_key, act in getattr(self, "temaActions", {}).items():
+            act.setText(tr(f"tema_{t_key}"))
+
+        # Pencere Stilleri
+        if hasattr(self, "actionFusion"):
+            self.actionFusion.setText(tr("stil_fusion"))
+        if hasattr(self, "actionWindowsVista"):
+            self.actionWindowsVista.setText(tr("stil_vista"))
+        if hasattr(self, "actionWindowsXP"):
+            self.actionWindowsXP.setText(tr("stil_windows"))
+
+        if hasattr(self, "actionCikis"):
+            self.actionCikis.setText(tr("cikis"))
+        if hasattr(self, "actionLisans"):
+            self.actionLisans.setText(tr("lisans"))
+        if hasattr(self, "actionHakkinda"):
+            self.actionHakkinda.setText(tr("hakkinda"))
+        if hasattr(self, "actionQtHakkinda"):
+            self.actionQtHakkinda.setText(tr("menu_qt_hakkinda"))
+        if hasattr(self, "actionVakitleriGoster"):
+            self.actionVakitleriGoster.setText(tr("vakitleri_goster"))
+        if hasattr(self, "linkler_groupBox"):
+            self.linkler_groupBox.setTitle(tr("yararli_siteler"))
+
+        self.bolgesel_ayarlar_ulke_label.setText(tr("ulke"))
+        self.bolgesel_ayarlar_sehir_label.setText(tr("sehir"))
+        self.bolgesel_ayarlar_ilce_label.setText(tr("ilce"))
+        if hasattr(self, "bolgesel_ayarlar_dil_label"):
+            self.bolgesel_ayarlar_dil_label.setText(tr("dil"))
+
+        if hasattr(self, "erken_uyari_checkBox"):
+            self.erken_uyari_checkBox.setText(tr("erken_uyari_metin"))
+        if hasattr(self, "erken_uyari_sela_checkBox"):
+            self.erken_uyari_sela_checkBox.setText(tr("erken_sela_metin"))
+        if hasattr(self, "hicri_gun_ekle_checkBox"):
+            self.hicri_gun_ekle_checkBox.setText(tr("hicri_gun_metin"))
+
+        if hasattr(self, "vakitleri_goster_pushButton"):
+            self.vakitleri_goster_pushButton.setText(tr("vakitleri_aylik_goster"))
+        if hasattr(self, "vakitleri_guncelle_pushButton"):
+            self.vakitleri_guncelle_pushButton.setText(tr("vakitleri_guncelle"))
+
+        if hasattr(self, "ayarlar_varsayilan_pushButton"):
+            self.ayarlar_varsayilan_pushButton.setText(tr("btn_varsayilan"))
+        if hasattr(self, "ayarlar_kaydet_pushButton"):
+            self.ayarlar_kaydet_pushButton.setText(tr("btn_kaydet"))
+        if hasattr(self, "bolgesel_ayarlar_varsayilan_pushButton"):
+            self.bolgesel_ayarlar_varsayilan_pushButton.setText(tr("btn_varsayilan"))
+        if hasattr(self, "bolgesel_ayarlar_kaydet_pushButton"):
+            self.bolgesel_ayarlar_kaydet_pushButton.setText(tr("btn_kaydet"))
+
+        # Ses Ayarları Sekmesi
+        if hasattr(self, "ses_seviyesi_label"):
+            self.ses_seviyesi_label.setText(tr("ses_seviyesi"))
+        sound_keys = ["sabah", "ogle", "ikindi", "aksam", "yatsi", "dua", "sela", "uyari"]
+        for sk in sound_keys:
+            lbl = getattr(self, f"{sk}_ses_label", None) or getattr(self, f"{sk}_label", None)
+            if lbl:
+                lbl.setText(tr(f"{sk}_etiket"))
+            btn_ekle = getattr(self, f"{sk}_toolButton", None)
+            if btn_ekle:
+                btn_ekle.setText(tr("btn_ekle"))
+            btn_play = getattr(self, f"btnPlay_{sk}", None)
+            if btn_play:
+                btn_play.setToolTip(tr("btn_oynat"))
+
+        if hasattr(self, "ses_varsayilan_pushButton"):
+            self.ses_varsayilan_pushButton.setText(tr("btn_varsayilan"))
+        if hasattr(self, "ses_kaydet_pushButton"):
+            self.ses_kaydet_pushButton.setText(tr("btn_kaydet"))
+
+        # Vakit İsimleri
+        vakit_map = {
+            "imsak": tr("imsak"),
+            "gunes": tr("gunes"),
+            "ogle": tr("ogle"),
+            "ikindi": tr("ikindi"),
+            "aksam": tr("aksam"),
+            "yatsi": tr("yatsi")
+        }
+        for vk, bilesenler in getattr(self, "modern_vakit_satirlari", {}).items():
+            if vk in vakit_map:
+                bilesenler["ad"].setText(vakit_map[vk])
+            bilesenler["badge"].setText(tr("vakit_aktif"))
+
+        self.imsak_label.setText(tr("imsak"))
+        self.gunes_label.setText(tr("gunes"))
+        self.ogle_label.setText(tr("ogle"))
+        self.ikindi_label.setText(tr("ikindi"))
+        self.aksam_label.setText(tr("aksam"))
+        self.yatsi_label.setText(tr("yatsi"))
+
+        # Statusbar
+        if hasattr(self, "statusbar") and self.statusbar:
+            self.statusbar.showMessage(tr("kaynak"))
+
+        # Hava Durumu
+        if hasattr(self, "havaDurumuWidget") and self.havaDurumuWidget:
+            self.havaDurumuWidget.retranslateUi()
+
+        if hasattr(self, "saatiGuncelle"):
+            self.saatiGuncelle()
 
     def hakkindaDialog(self):
         from moduller.Hakkinda import Hakkinda

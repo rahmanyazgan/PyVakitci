@@ -56,7 +56,15 @@ import com.rahmanyazgan.pyvakitci.data.local.PreferencesManager
 import com.rahmanyazgan.pyvakitci.service.AudioPlayerManager
 import com.rahmanyazgan.pyvakitci.service.BootReceiver
 import com.rahmanyazgan.pyvakitci.ui.theme.AppColors
+import com.rahmanyazgan.pyvakitci.util.L10n
 import java.io.File
+
+/** Ses kartı alt açıklaması: "Sabah Ezanı" / "Fajr Adhan" / "Ezan Duası" ... */
+private fun localizedAdhanDesc(trName: String): String = when (trName) {
+    "Dua" -> L10n.t("snd_ezan_duasi")
+    "Sela" -> L10n.t("snd_sela")
+    else -> L10n.f("a_adhan_of", L10n.prayerFromTr(trName))
+}
 
 @Composable
 fun AudioSettingsScreen(
@@ -129,7 +137,7 @@ fun AudioSettingsScreen(
             .verticalScroll(scrollState)
     ) {
         Text(
-            text = "Ezan ve Vakit Sesleri",
+            text = L10n.t("a_title"),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = colors.text
@@ -151,7 +159,7 @@ fun AudioSettingsScreen(
         prayers.forEach { (name, _, defaultDesc) ->
             val prayerKey = prefs.normalizePrayerKey(name)
             var enabled by remember { mutableStateOf(prefs.isPrayerSoundEnabled(prayerKey)) }
-            val currentDisplayName = remember(soundRefreshTrigger) {
+            val currentDisplayName = remember(soundRefreshTrigger, L10n.lang) {
                 prefs.getPrayerSoundDisplayName(prayerKey)
             }
             val isCustom = remember(soundRefreshTrigger) {
@@ -182,13 +190,13 @@ fun AudioSettingsScreen(
                             }
                     ) {
                         Text(
-                            text = name,
+                            text = L10n.prayerFromTr(name),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             color = colors.text
                         )
                         Text(
-                            text = if (isCustom) "$currentDisplayName (Özel Ses)" else "$defaultDesc: $currentDisplayName",
+                            text = if (isCustom) "$currentDisplayName (${L10n.t("a_custom")})" else "${localizedAdhanDesc(name)}: $currentDisplayName",
                             fontSize = 11.sp,
                             color = if (isCustom) colors.primary else colors.text.copy(alpha = 0.6f)
                         )
@@ -205,7 +213,7 @@ fun AudioSettingsScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.FolderOpen,
-                                contentDescription = "Ses Dosyası Seç",
+                                contentDescription = L10n.t("a_pick"),
                                 tint = colors.text.copy(alpha = 0.7f),
                                 modifier = Modifier.size(20.dp)
                             )
@@ -222,7 +230,7 @@ fun AudioSettingsScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Refresh,
-                                    contentDescription = "Varsayılana Dön",
+                                    contentDescription = L10n.t("a_reset"),
                                     tint = colors.text.copy(alpha = 0.7f),
                                     modifier = Modifier.size(18.dp)
                                 )
@@ -236,7 +244,7 @@ fun AudioSettingsScreen(
                         ) {
                             Icon(
                                 imageVector = if (currentPlayingSound == prayerKey) Icons.Default.Stop else Icons.Default.PlayArrow,
-                                contentDescription = "Oynat",
+                                contentDescription = L10n.t("a_play"),
                                 tint = colors.primary,
                                 modifier = Modifier.size(22.dp)
                             )
@@ -260,7 +268,7 @@ fun AudioSettingsScreen(
 
         // Warning Sound Card
         val warningKey = "uyari"
-        val warningDisplayName = remember(soundRefreshTrigger) {
+        val warningDisplayName = remember(soundRefreshTrigger, L10n.lang) {
             prefs.getPrayerSoundDisplayName(warningKey)
         }
         val isWarningCustom = remember(soundRefreshTrigger) {
@@ -289,13 +297,13 @@ fun AudioSettingsScreen(
                         }
                 ) {
                     Text(
-                        text = "Vakit Öncesi Uyarı Sesi",
+                        text = L10n.t("a_warn_title"),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = colors.text
                     )
                     Text(
-                        text = if (isWarningCustom) "$warningDisplayName (Özel Ses)" else "Vakitten 15 dk önce: $warningDisplayName",
+                        text = if (isWarningCustom) "$warningDisplayName (${L10n.t("a_custom")})" else "${L10n.f("a_warn_desc", prefs.warningMinutes)}: $warningDisplayName",
                         fontSize = 11.sp,
                         color = if (isWarningCustom) colors.primary else colors.text.copy(alpha = 0.6f)
                     )
@@ -311,7 +319,7 @@ fun AudioSettingsScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.FolderOpen,
-                            contentDescription = "Uyarı Sesi Dosyası Seç",
+                            contentDescription = L10n.t("a_pick"),
                             tint = colors.text.copy(alpha = 0.7f),
                             modifier = Modifier.size(20.dp)
                         )
@@ -327,7 +335,7 @@ fun AudioSettingsScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Refresh,
-                                contentDescription = "Varsayılana Dön",
+                                contentDescription = L10n.t("a_reset"),
                                 tint = colors.text.copy(alpha = 0.7f),
                                 modifier = Modifier.size(18.dp)
                             )
@@ -340,7 +348,7 @@ fun AudioSettingsScreen(
                     ) {
                         Icon(
                             imageVector = if (currentPlayingSound == warningKey) Icons.Default.Stop else Icons.Default.PlayArrow,
-                            contentDescription = "Oynat",
+                            contentDescription = L10n.t("a_play"),
                             tint = colors.primary,
                             modifier = Modifier.size(22.dp)
                         )
@@ -371,7 +379,7 @@ fun AudioSettingsScreen(
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Ses Seviyesi: %${volumeLevel.toInt()}",
+                    text = "${L10n.t("a_volume")}: %${volumeLevel.toInt()}",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = colors.text
@@ -393,7 +401,7 @@ fun AudioSettingsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Vakitlerde Titreşim",
+                        text = L10n.t("a_vibration"),
                         fontSize = 14.sp,
                         color = colors.text
                     )
@@ -433,7 +441,7 @@ fun AudioSettingsScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Kesintisiz Ezan İzni (Pil Optimizasyonu)",
+                            text = L10n.t("a_battery_title"),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             color = colors.text
@@ -441,9 +449,9 @@ fun AudioSettingsScreen(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = if (isIgnoringBattery)
-                                "Pil kısıtlaması yok. Alarmlar ekran kapalıyken kesintisiz çalacaktır."
+                                L10n.t("a_battery_ok")
                             else
-                                "Telefonunuz arka planda ezan ve bildirimleri geciktirmemesi için pil kısıtlamasını kaldırın.",
+                                L10n.t("a_battery_need"),
                             fontSize = 12.sp,
                             color = if (isIgnoringBattery) colors.primary else colors.text.copy(alpha = 0.6f)
                         )
@@ -470,13 +478,13 @@ fun AudioSettingsScreen(
                             colors = ButtonDefaults.buttonColors(containerColor = colors.primary),
                             shape = RoundedCornerShape(8.dp)
                         ) {
-                            Text("İzin Ver", fontSize = 12.sp)
+                            Text(L10n.t("a_allow"), fontSize = 12.sp)
                         }
                     } else {
                         Spacer(modifier = Modifier.width(8.dp))
                         Icon(
                             imageVector = Icons.Default.Check,
-                            contentDescription = "Etkin",
+                            contentDescription = L10n.t("a_enabled"),
                             tint = colors.primary,
                             modifier = Modifier.size(24.dp)
                         )

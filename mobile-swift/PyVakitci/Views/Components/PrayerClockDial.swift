@@ -97,7 +97,7 @@ public struct PrayerClockDial: View {
 
             // Center Digital Information
             VStack(spacing: 4) {
-                Text("✦ \(activeInfo.currentPrayer.rawValue.uppercased()) ✦")
+                Text("✦ \(activeInfo.currentPrayer.localizedName.uppercased(with: LocalizationManager.shared.currentLocale)) ✦")
                     .font(.system(size: 13, weight: .bold))
                     .foregroundColor(AppThemeColors.arcImsak)
 
@@ -105,7 +105,7 @@ public struct PrayerClockDial: View {
                     .font(.system(size: 26, weight: .heavy, design: .rounded))
                     .foregroundColor(textColor)
 
-                Text("\(activeInfo.nextPrayer.rawValue)'a Kalan")
+                Text(activeInfo.nextPrayer.remainingSuffix)
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(textColor.opacity(0.65))
 

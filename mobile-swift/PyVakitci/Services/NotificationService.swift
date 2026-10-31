@@ -92,8 +92,9 @@ public class NotificationService: NSObject, UNUserNotificationCenterDelegate {
                     if warnDate > now {
                         let warnComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: warnDate)
                         let warnContent = UNMutableNotificationContent()
-                        warnContent.title = "\(name) Vaktine \(warningMinutes) Dakika Kaldı"
-                        warnContent.body = "\(locationText) | \(name) vaktine az kaldı (Saat: \(timeStr))"
+                        let localizedPrayer = LocalizationManager.shared.prayerFromTr(name)
+                        warnContent.title = LocalizationManager.shared.tr("n_warn_title")
+                        warnContent.body = LocalizationManager.shared.f("n_warn_text", localizedPrayer, warningMinutes)
                         warnContent.sound = UNNotificationSound(named: UNNotificationSoundName("uyari.mp3"))
 
                         let warnTrigger = UNCalendarNotificationTrigger(dateMatching: warnComponents, repeats: false)
@@ -111,8 +112,9 @@ public class NotificationService: NSObject, UNUserNotificationCenterDelegate {
                 if prayerDate > now {
                     let soundMode = LocalStorageService.shared.getPrayerSoundMode(prayerName: name)
                     let content = UNMutableNotificationContent()
-                    content.title = "\(name) Vakti Girdi"
-                    content.body = "\(locationText) | Saat: \(timeStr)"
+                    let localizedPrayer = LocalizationManager.shared.prayerFromTr(name)
+                    content.title = LocalizationManager.shared.f("n_prayer_title", localizedPrayer)
+                    content.body = LocalizationManager.shared.f("n_prayer_text", locationText, timeStr)
 
                     switch soundMode {
                     case .ezan:

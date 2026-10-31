@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.rahmanyazgan.pyvakitci.MainActivity
 import com.rahmanyazgan.pyvakitci.R
+import com.rahmanyazgan.pyvakitci.util.L10n
 
 class PrayerNotificationHelper(private val context: Context) {
     private val notificationManager =
@@ -22,6 +23,7 @@ class PrayerNotificationHelper(private val context: Context) {
     }
 
     init {
+        L10n.init(context)
         createNotificationChannels()
     }
 
@@ -29,10 +31,10 @@ class PrayerNotificationHelper(private val context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID_PRAYER,
-                CHANNEL_NAME_PRAYER,
+                L10n.t("n_channel"),
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Vakit girdiğinde ve vakit öncesi uyarı bildirimleri"
+                description = L10n.t("n_channel_desc")
                 enableVibration(true)
                 lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
                 setSound(null, null)
@@ -60,13 +62,13 @@ class PrayerNotificationHelper(private val context: Context) {
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID_PRAYER)
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("$prayerName Vakti Girdi")
-            .setContentText("$locationText | Saat: $time")
+            .setContentTitle(L10n.f("n_prayer_title", L10n.prayerFromTr(prayerName)))
+            .setContentText(L10n.f("n_prayer_text", locationText, time))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
-            .addAction(android.R.drawable.ic_media_pause, "Sesi Durdur", stopPi)
+            .addAction(android.R.drawable.ic_media_pause, L10n.t("n_stop"), stopPi)
             .build()
 
         notificationManager.notify(NOTIFICATION_ID_PRAYER, notification)
@@ -91,13 +93,13 @@ class PrayerNotificationHelper(private val context: Context) {
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID_PRAYER)
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("Vakit Yaklaşıyor")
-            .setContentText("$prayerName vaktine $minutesLeft dakika kaldı.")
+            .setContentTitle(L10n.t("n_warn_title"))
+            .setContentText(L10n.f("n_warn_text", L10n.prayerFromTr(prayerName), minutesLeft))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
-            .addAction(android.R.drawable.ic_media_pause, "Sesi Durdur", stopPi)
+            .addAction(android.R.drawable.ic_media_pause, L10n.t("n_stop"), stopPi)
             .build()
 
         notificationManager.notify(NOTIFICATION_ID_WARNING, notification)

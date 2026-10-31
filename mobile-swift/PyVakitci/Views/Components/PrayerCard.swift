@@ -60,7 +60,7 @@ public struct PrayerCard: View {
     public var body: some View {
         VStack(spacing: 4) {
             HStack(spacing: 4) {
-                Text(title)
+                Text(LocalizationManager.shared.prayerFromTr(title))
                     .font(.system(size: 12, weight: isActive ? .bold : .medium))
                     .foregroundColor(isActive ? activeBlue : textColor.opacity(0.7))
 

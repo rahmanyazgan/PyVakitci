@@ -149,6 +149,8 @@ mkdir "%DIST_DIR%"
 
 copy /y "%EXE_BULUNDU%" "%DIST_DIR%\" >nul
 copy /y "%PROJE_DIZINI%ontanimli_ayarlar.ini" "%DIST_DIR%\" >nul
+if exist "%PROJE_DIZINI%..\GPLv3_TR.html" copy /y "%PROJE_DIZINI%..\GPLv3_TR.html" "%DIST_DIR%\" >nul
+if exist "%PROJE_DIZINI%..\GPLv3_EN.html" copy /y "%PROJE_DIZINI%..\GPLv3_EN.html" "%DIST_DIR%\" >nul
 if exist "%PROJE_DIZINI%clever.exe" copy /y "%PROJE_DIZINI%clever.exe" "%DIST_DIR%\" >nul
 if exist "%PROJE_DIZINI%ses_dosyalari" xcopy /e /i /y "%PROJE_DIZINI%ses_dosyalari" "%DIST_DIR%\ses_dosyalari" >nul
 

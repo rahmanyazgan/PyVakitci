@@ -34,6 +34,8 @@ set(PROJECT_SOURCES
     src/HttpClient.cpp
     src/Dialogs.h
     src/Dialogs.cpp
+    src/Localization.h
+    src/Localization.cpp
     resources/resources.qrc
     resources/app.rc
 )

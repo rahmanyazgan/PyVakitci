@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PyVakitci</string>
+    <string name="vakit_saati">礼拝時計</string>
+    <string name="hava_durumu">天気</string>
+    <string name="kible_pusulasi">キブラコンパス</string>
+    <string name="ayarlar">設定</string>
+    <string name="ses_ayarlari">音声設定</string>
+
+    <string name="imsak">ファジュル</string>
+    <string name="gunes">日の出</string>
+    <string name="ogle">ズフル</string>
+    <string name="ikindi">アスル</string>
+    <string name="aksam">マグリブ</string>
+    <string name="yatsi">イシャー</string>
+
+    <string name="kaynak_diyanet">出典: diyanet.gov.tr</string>
+</resources>
+

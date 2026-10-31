@@ -1,4 +1,4 @@
-﻿package com.rahmanyazgan.pyvakitci.ui.components
+package com.rahmanyazgan.pyvakitci.ui.components
 
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rahmanyazgan.pyvakitci.util.L10n
 
 @Composable
 fun BottomNavBar(
@@ -38,11 +39,11 @@ fun BottomNavBar(
             .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
     ) {
         val items = listOf(
-            Triple(0, "Vakit", Icons.Default.AccessTime),
-            Triple(1, "Hava", Icons.Default.WbSunny),
-            Triple(2, "Kıble", Icons.Default.Explore),
-            Triple(3, "Sesler", Icons.Default.MusicNote),
-            Triple(4, "Ayarlar", Icons.Default.Settings)
+            Triple(0, L10n.t("nav_vakit"), Icons.Default.AccessTime),
+            Triple(1, L10n.t("nav_hava"), Icons.Default.WbSunny),
+            Triple(2, L10n.t("nav_kible"), Icons.Default.Explore),
+            Triple(3, L10n.t("nav_sesler"), Icons.Default.MusicNote),
+            Triple(4, L10n.t("nav_ayarlar"), Icons.Default.Settings)
         )
 
         items.forEach { (index, title, icon) ->

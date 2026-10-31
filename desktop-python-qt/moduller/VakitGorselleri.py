@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 import math
 from PyQt5 import QtCore, QtGui, QtWidgets
+from moduller.Localization import tr
 
-TURKCE_BUYUK_VAKIT = {
-    "imsak": "İMSAK",
-    "gunes": "GÜNEŞ",
-    "ogle": "ÖĞLE",
-    "ikindi": "İKİNDİ",
-    "aksam": "AKŞAM",
-    "yatsi": "YATSI",
-    "sabah": "İMSAK",
-}
+def get_vakit_upper(vakit_key):
+    k = str(vakit_key).lower().strip()
+    if k == "sabah":
+        k = "imsak"
+    return tr(k).upper()
 
 class VakitSaatiWidget(QtWidgets.QWidget):
     """
@@ -115,7 +112,7 @@ class VakitSaatiWidget(QtWidgets.QWidget):
             p.setPen(QtGui.QColor(71, 85, 105))
             p.setFont(QtGui.QFont("Segoe UI", 8))
             p.drawText(QtCore.QRectF(140, 10, 150, 15), QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter, self.miladiTarih)
-            p.drawText(QtCore.QRectF(130, 25, 160, 20), QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter, self.hicriTarih)
+            p.drawText(QtCore.QRectF(110, 25, 180, 20), QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter, self.hicriTarih)
         else:
             p.setPen(QtGui.QColor(148, 163, 184))
             p.setFont(QtGui.QFont("Segoe UI", 8, QtGui.QFont.Bold))
@@ -129,7 +126,7 @@ class VakitSaatiWidget(QtWidgets.QWidget):
             p.setPen(QtGui.QColor(148, 163, 184))
             p.setFont(QtGui.QFont("Segoe UI", 8))
             p.drawText(QtCore.QRectF(140, 10, 150, 15), QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter, self.miladiTarih)
-            p.drawText(QtCore.QRectF(130, 25, 160, 20), QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter, self.hicriTarih)
+            p.drawText(QtCore.QRectF(110, 25, 180, 20), QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter, self.hicriTarih)
 
         # 3. VAKİT SAATİ KADRANI
         cx, cy = 153.0, 154.0
@@ -148,12 +145,12 @@ class VakitSaatiWidget(QtWidgets.QWidget):
         yatsi_dk = self._dakikayaCevir(self.vakitler.get("yatsi", "19:33"))
 
         dilimler = [
-            ("imsak", imsak_dk, gunes_dk, QtGui.QColor(249, 115, 22), "Sabah"),
-            ("gunes", gunes_dk, ogle_dk, QtGui.QColor(14, 165, 233), "Güneş"),
-            ("ogle", ogle_dk, ikindi_dk, QtGui.QColor(234, 179, 8), "Öğle"),
-            ("ikindi", ikindi_dk, aksam_dk, QtGui.QColor(245, 158, 11), "İkindi"),
-            ("aksam", aksam_dk, yatsi_dk, QtGui.QColor(168, 85, 247), "Akşam"),
-            ("yatsi", yatsi_dk, imsak_dk + 1440, QtGui.QColor(59, 130, 246), "Yatsı"),
+            ("imsak", imsak_dk, gunes_dk, QtGui.QColor(249, 115, 22), tr("imsak")),
+            ("gunes", gunes_dk, ogle_dk, QtGui.QColor(14, 165, 233), tr("gunes")),
+            ("ogle", ogle_dk, ikindi_dk, QtGui.QColor(234, 179, 8), tr("ogle")),
+            ("ikindi", ikindi_dk, aksam_dk, QtGui.QColor(245, 158, 11), tr("ikindi")),
+            ("aksam", aksam_dk, yatsi_dk, QtGui.QColor(168, 85, 247), tr("aksam")),
+            ("yatsi", yatsi_dk, imsak_dk + 1440, QtGui.QColor(59, 130, 246), tr("yatsi")),
         ]
 
         # Kadran Zemin Çemberi
@@ -194,12 +191,12 @@ class VakitSaatiWidget(QtWidgets.QWidget):
 
         # Vakit Pinleri (Noktalar)
         for anahtar, dk_val, ad_str, renk_val in [
-            ("imsak", imsak_dk, "İmsak", QtGui.QColor("#ea580c")),
-            ("gunes", gunes_dk, "Güneş", QtGui.QColor("#0ea5e9")),
-            ("ogle", ogle_dk, "Öğle", QtGui.QColor("#eab308")),
-            ("ikindi", ikindi_dk, "İkindi", QtGui.QColor("#f97316")),
-            ("aksam", aksam_dk, "Akşam", QtGui.QColor("#a855f7")),
-            ("yatsi", yatsi_dk, "Yatsı", QtGui.QColor("#3b82f6")),
+            ("imsak", imsak_dk, tr("imsak"), QtGui.QColor("#ea580c")),
+            ("gunes", gunes_dk, tr("gunes"), QtGui.QColor("#0ea5e9")),
+            ("ogle", ogle_dk, tr("ogle"), QtGui.QColor("#eab308")),
+            ("ikindi", ikindi_dk, tr("ikindi"), QtGui.QColor("#f97316")),
+            ("aksam", aksam_dk, tr("aksam"), QtGui.QColor("#a855f7")),
+            ("yatsi", yatsi_dk, tr("yatsi"), QtGui.QColor("#3b82f6")),
         ]:
             ang_rad = math.radians(dkToAngle(dk_val))
             px = cx + (r_dis + r_ic)/2.0 * math.cos(ang_rad)
@@ -249,7 +246,7 @@ class VakitSaatiWidget(QtWidgets.QWidget):
         aktifRenk = QtGui.QColor(2, 132, 199) if isLight else QtGui.QColor(56, 189, 248)
         p.setPen(aktifRenk)
         p.setFont(QtGui.QFont("Segoe UI", 8, QtGui.QFont.Bold))
-        aktifBaslik = TURKCE_BUYUK_VAKIT.get(str(self.aktifVakit).lower(), "İMSAK")
+        aktifBaslik = get_vakit_upper(self.aktifVakit)
         p.drawText(QtCore.QRectF(cx - 50, cy - 38, 100, 16), QtCore.Qt.AlignCenter, f"✦ {aktifBaslik} ✦")
 
         saatRenk = QtGui.QColor(15, 23, 42) if isLight else QtGui.QColor(255, 255, 255)
@@ -263,10 +260,9 @@ class VakitSaatiWidget(QtWidgets.QWidget):
         kalanBaslikRenk = QtGui.QColor(100, 116, 139) if isLight else QtGui.QColor(148, 163, 184)
         p.setPen(kalanBaslikRenk)
         p.setFont(QtGui.QFont("Segoe UI", 7))
-        sonrakiHam = (self.sonrakiVakitAd or "").replace(" :", "")
-        for t in ["'e Kalan Süre", "’e Kalan Süre", "'a Kalan Süre", "’a Kalan Süre", " Kalan Süre", "'e Kalan", "’e Kalan", "'a Kalan", "’a Kalan"]:
-            sonrakiHam = sonrakiHam.replace(t, "")
-        sonrakiEtiket = f"{sonrakiHam.strip()}'e Kalan"
+        sonrakiMap = {"imsak": "gunes", "sabah": "gunes", "gunes": "ogle", "ogle": "ikindi", "ikindi": "aksam", "aksam": "yatsi", "yatsi": "imsak"}
+        sonrakiKey = sonrakiMap.get(str(self.aktifVakit).lower(), "imsak")
+        sonrakiEtiket = f"{tr('kalan')} {tr(sonrakiKey)}"
         p.drawText(QtCore.QRectF(cx - 50, cy + 2, 100, 14), QtCore.Qt.AlignCenter, sonrakiEtiket)
 
         kalanRenk = QtGui.QColor(217, 119, 6) if isLight else QtGui.QColor(251, 191, 36)
@@ -276,12 +272,12 @@ class VakitSaatiWidget(QtWidgets.QWidget):
 
         # 6. Alt Vakit Mini Kartları (2 Satır x 3 Sütun)
         kartlar = [
-            ("İmsak", self.vakitler.get("imsak", "--:--"), "imsak"),
-            ("Güneş", self.vakitler.get("gunes", "--:--"), "gunes"),
-            ("Öğle", self.vakitler.get("ogle", "--:--"), "ogle"),
-            ("İkindi", self.vakitler.get("ikindi", "--:--"), "ikindi"),
-            ("Akşam", self.vakitler.get("aksam", "--:--"), "aksam"),
-            ("Yatsı", self.vakitler.get("yatsi", "--:--"), "yatsi"),
+            (tr("imsak"), self.vakitler.get("imsak", "--:--"), "imsak"),
+            (tr("gunes"), self.vakitler.get("gunes", "--:--"), "gunes"),
+            (tr("ogle"), self.vakitler.get("ogle", "--:--"), "ogle"),
+            (tr("ikindi"), self.vakitler.get("ikindi", "--:--"), "ikindi"),
+            (tr("aksam"), self.vakitler.get("aksam", "--:--"), "aksam"),
+            (tr("yatsi"), self.vakitler.get("yatsi", "--:--"), "yatsi"),
         ]
 
         startX = 12.0
@@ -499,8 +495,8 @@ class GokyuzuWidget(QtWidgets.QWidget):
         # Canlı Saat ve Aktif Vakit Rozeti
         p.setPen(QtGui.QColor(56, 189, 248))
         p.setFont(QtGui.QFont("Segoe UI", 9, QtGui.QFont.Bold))
-        aktifBaslik = TURKCE_BUYUK_VAKIT.get(str(self.aktifVakit).lower(), "İMSAK")
-        p.drawText(QtCore.QRectF(24, 82, 150, 18), QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter, f"✦ {aktifBaslik} VAKTİ ✦")
+        aktifBaslik = get_vakit_upper(self.aktifVakit)
+        p.drawText(QtCore.QRectF(24, 82, 150, 18), QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter, f"✦ {aktifBaslik} ✦")
 
         p.setPen(QtGui.QColor(255, 255, 255))
         p.setFont(QtGui.QFont("Segoe UI", 18, QtGui.QFont.Bold))
@@ -510,10 +506,9 @@ class GokyuzuWidget(QtWidgets.QWidget):
         p.drawText(QtCore.QRectF(24, 102, 150, 30), QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter, saatGosterim)
 
         # Sağ Taraf: Geri Sayım
-        sonrakiHam = (self.sonrakiVakitAd or "").replace(" :", "")
-        for t in ["'e Kalan Süre", "’e Kalan Süre", "'a Kalan Süre", "’a Kalan Süre", " Kalan Süre", "'e Kalan", "’e Kalan", "'a Kalan", "’a Kalan"]:
-            sonrakiHam = sonrakiHam.replace(t, "")
-        sonrakiEtiket = f"{sonrakiHam.strip()}'e Kalan"
+        sonrakiMap = {"imsak": "gunes", "sabah": "gunes", "gunes": "ogle", "ogle": "ikindi", "ikindi": "aksam", "aksam": "yatsi", "yatsi": "imsak"}
+        sonrakiKey = sonrakiMap.get(str(self.aktifVakit).lower(), "imsak")
+        sonrakiEtiket = f"{tr('kalan')} {tr(sonrakiKey)}"
         p.setPen(QtGui.QColor(203, 213, 225))
         p.setFont(QtGui.QFont("Segoe UI", 8))
         p.drawText(QtCore.QRectF(140, 82, 142, 18), QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter, sonrakiEtiket)
@@ -528,12 +523,12 @@ class GokyuzuWidget(QtWidgets.QWidget):
 
         # 5. Alt 6 Vakit Kartları
         kartlar = [
-            ("İmsak", self.vakitler.get("imsak", "--:--"), "imsak"),
-            ("Güneş", self.vakitler.get("gunes", "--:--"), "gunes"),
-            ("Öğle", self.vakitler.get("ogle", "--:--"), "ogle"),
-            ("İkindi", self.vakitler.get("ikindi", "--:--"), "ikindi"),
-            ("Akşam", self.vakitler.get("aksam", "--:--"), "aksam"),
-            ("Yatsı", self.vakitler.get("yatsi", "--:--"), "yatsi"),
+            (tr("imsak"), self.vakitler.get("imsak", "--:--"), "imsak"),
+            (tr("gunes"), self.vakitler.get("gunes", "--:--"), "gunes"),
+            (tr("ogle"), self.vakitler.get("ogle", "--:--"), "ogle"),
+            (tr("ikindi"), self.vakitler.get("ikindi", "--:--"), "ikindi"),
+            (tr("aksam"), self.vakitler.get("aksam", "--:--"), "aksam"),
+            (tr("yatsi"), self.vakitler.get("yatsi", "--:--"), "yatsi"),
         ]
 
         startX = 12.0

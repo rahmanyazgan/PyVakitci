@@ -14,6 +14,14 @@ public enum PrayerSoundMode: Int, Codable, CaseIterable, Identifiable {
         case .sessiz: return "Sessiz"
         }
     }
+
+    public var localizedTitle: String {
+        switch self {
+        case .ezan: return LocalizationManager.shared.tr("mode_ezan")
+        case .bip: return LocalizationManager.shared.tr("mode_bip")
+        case .sessiz: return LocalizationManager.shared.tr("mode_sessiz")
+        }
+    }
 }
 
 public class LocalStorageService {
@@ -27,6 +35,15 @@ public class LocalStorageService {
     private let keyVolume = "pyvakitci_volume"
     private let keyVibration = "pyvakitci_vibration"
     private let keyEzanDuasi = "pyvakitci_ezan_duasi"
+    private let keyLanguage = "pyvakitci_language"
+
+    public func getLanguage() -> String {
+        return userDefaults.string(forKey: keyLanguage) ?? "tr"
+    }
+
+    public func setLanguage(_ lang: String) {
+        userDefaults.set(lang, forKey: keyLanguage)
+    }
 
     public func saveLocation(_ location: SelectedLocation) {
         if let data = try? JSONEncoder().encode(location) {

@@ -5,6 +5,7 @@ import math
 import urllib.parse
 import urllib.request
 from PyQt5 import QtCore, QtGui, QtWidgets
+from moduller.Localization import tr, day_name, weather_description
 
 WMO_DURUMLAR = {
     0: ("Açık", "gunesli"),
@@ -145,8 +146,10 @@ class HavaDurumuThread(QtCore.QThread):
 
             for i in range(min(5, len(times))):
                 tarihStr = times[i]
+                wday = 1
                 try:
                     dt = datetime.date.fromisoformat(tarihStr)
+                    wday = dt.isoweekday()
                     gunAd = "Bugün" if i == 0 else GUN_ADLARI[dt.weekday()]
                 except Exception:
                     gunAd = tarihStr
@@ -157,6 +160,8 @@ class HavaDurumuThread(QtCore.QThread):
                 prob = int(probs[i]) if i < len(probs) and probs[i] is not None else 0
                 gunlukListe.append({
                     "gun": gunAd,
+                    "weekday": wday,
+                    "wcode": dc,
                     "durum": dAd,
                     "tip": dTip,
                     "max": tmax,
@@ -170,6 +175,7 @@ class HavaDurumuThread(QtCore.QThread):
                 "nem": int(cur.get("relative_humidity_2m", 0)),
                 "ruzgar": round(cur.get("wind_speed_10m", 0)),
                 "gunduzMu": bool(cur.get("is_day", 1)),
+                "wcode": wcode,
                 "durum": durumAd,
                 "tip": ikonTip,
                 "gunluk": gunlukListe,
@@ -201,11 +207,17 @@ class HavaDurumuWidget(QtWidgets.QWidget):
         self._sonSorguAnahtari = None
 
         # Yenile butonu
-        self.yenileBtn = QtWidgets.QPushButton("↻ Yenile", self)
+        self.yenileBtn = QtWidgets.QPushButton("↻", self)
         self.yenileBtn.setGeometry(QtCore.QRect(228, 12, 64, 24))
         self.yenileBtn.setCursor(QtCore.Qt.PointingHandCursor)
-        self.yenileBtn.setToolTip("Hava durumunu şimdi güncelle")
         self.yenileBtn.clicked.connect(lambda: self.havaDurumunuGuncelle(zorla=True))
+        self.retranslateUi()
+
+    def retranslateUi(self):
+        if hasattr(self, "yenileBtn") and self.yenileBtn:
+            self.yenileBtn.setText("↻ " + tr("yenile"))
+            self.yenileBtn.setToolTip(tr("hava_yenile_tooltip"))
+        self.update()
 
     def temaAyarla(self, tema):
         self.tema = tema or "varsayilan"
@@ -384,13 +396,13 @@ class HavaDurumuWidget(QtWidgets.QWidget):
         if self.yukleniyor and self.veri is None:
             p.setPen(ustYaziRenk)
             p.setFont(QtGui.QFont("Segoe UI", 10, QtGui.QFont.Bold))
-            p.drawText(QtCore.QRectF(20, 150, 266, 40), QtCore.Qt.AlignCenter, "Hava durumu yükleniyor...")
+            p.drawText(QtCore.QRectF(20, 150, 266, 40), QtCore.Qt.AlignCenter, tr("hava_yukleniyor"))
             return
 
         if self.hataMesaji and self.veri is None:
             p.setPen(QtGui.QColor(239, 68, 68))
             p.setFont(QtGui.QFont("Segoe UI", 9, QtGui.QFont.Bold))
-            p.drawText(QtCore.QRectF(20, 150, 266, 40), QtCore.Qt.AlignCenter, self.hataMesaji)
+            p.drawText(QtCore.QRectF(20, 150, 266, 40), QtCore.Qt.AlignCenter, tr("hava_hata"))
             return
 
         if not self.veri:
@@ -416,9 +428,10 @@ class HavaDurumuWidget(QtWidgets.QWidget):
         p.drawText(QtCore.QRectF(24, 58, 140, 44), QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter, f"{self.veri['sicaklik']}°C")
 
         # Durum Açıklaması
+        durumAciklama = weather_description(self.veri["wcode"]) if "wcode" in self.veri else self.veri["durum"]
         p.setPen(QtGui.QColor(224, 242, 254))
         p.setFont(QtGui.QFont("Segoe UI", 10, QtGui.QFont.Bold))
-        p.drawText(QtCore.QRectF(24, 104, 175, 20), QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter, self.veri["durum"])
+        p.drawText(QtCore.QRectF(24, 104, 175, 20), QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter, durumAciklama)
 
         # Bugün En Yüksek / En Düşük
         if self.veri.get("gunluk"):
@@ -428,7 +441,7 @@ class HavaDurumuWidget(QtWidgets.QWidget):
             p.drawText(
                 QtCore.QRectF(24, 126, 185, 18),
                 QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter,
-                f"En Yüksek: {bgn['max']}°   •   En Düşük: {bgn['min']}°",
+                f"{tr('en_yuksek')}: {bgn['max']}°   •   {tr('en_dusuk')}: {bgn['min']}°",
             )
 
         # Sağda Animasyonlu Hava İkonu
@@ -436,9 +449,9 @@ class HavaDurumuWidget(QtWidgets.QWidget):
 
         # 4. Üçlü Detay Kutuları (Hissedilen, Nem, Rüzgâr)
         detaylar = [
-            ("Hissedilen", f"{self.veri['hissedilen']}°C"),
-            ("Nem Oranı", f"%{self.veri['nem']}"),
-            ("Rüzgâr", f"{self.veri['ruzgar']} km/s"),
+            (tr("hava_hissedilen"), f"{self.veri['hissedilen']}°C"),
+            (tr("hava_nem"), f"%{self.veri['nem']}"),
+            (tr("hava_ruzgar"), f"{self.veri['ruzgar']} km/s"),
         ]
         for idx, (etiket, deger) in enumerate(detaylar):
             dx = 12.0 + idx * 96.0
@@ -463,11 +476,12 @@ class HavaDurumuWidget(QtWidgets.QWidget):
         # 5. 5 Günlük Hava Tahmini Satırları
         p.setPen(ustYaziRenk)
         p.setFont(QtGui.QFont("Segoe UI", 8, QtGui.QFont.Bold))
-        p.drawText(QtCore.QRectF(14, 214, 180, 16), QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter, "5 GÜNLÜK TAHMİN")
+        p.drawText(QtCore.QRectF(14, 214, 180, 16), QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter, tr("hava_tahmin"))
+        saatMetin = tr("hava_saat").replace("%1", self.veri.get('guncellemeSaati', '')) if "%1" in tr("hava_saat") else f"Saat: {self.veri.get('guncellemeSaati', '')}"
         p.drawText(
             QtCore.QRectF(180, 214, 112, 16),
             QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter,
-            f"Saat: {self.veri.get('guncellemeSaati', '')}",
+            saatMetin,
         )
 
         gunluk = self.veri.get("gunluk", [])
@@ -487,17 +501,20 @@ class HavaDurumuWidget(QtWidgets.QWidget):
             p.drawRoundedRect(sRect, 6, 6)
 
             # Gün adı
+            gunAd = tr("bugun") if idx == 0 else day_name(g.get("weekday", 1))
             p.setPen(baslikRenk)
             p.setFont(QtGui.QFont("Segoe UI", 8, QtGui.QFont.Bold if idx == 0 else QtGui.QFont.Normal))
-            p.drawText(QtCore.QRectF(20, sy, 75, satirH), QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter, g["gun"])
+            p.drawText(QtCore.QRectF(20, sy, 75, satirH), QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter, gunAd)
 
             # Küçük İkon
             self._havaIkonuCiz(p, 108.0, sy + satirH / 2.0, 0.52, g["tip"], True)
 
             # Durum veya Yağış İhtimali
-            durumMetni = g["durum"]
+            durumGun = weather_description(g["wcode"]) if "wcode" in g else g["durum"]
             if g.get("yagis", 0) >= 20:
-                durumMetni = f"{g['durum']} (%{g['yagis']})"
+                durumMetni = f"{durumGun} (%{g['yagis']})"
+            else:
+                durumMetni = durumGun
             p.setPen(ustYaziRenk)
             p.setFont(QtGui.QFont("Segoe UI", 7))
             p.drawText(QtCore.QRectF(124, sy, 105, satirH), QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter, durumMetni)

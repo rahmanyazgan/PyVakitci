@@ -1,4 +1,4 @@
-﻿package com.rahmanyazgan.pyvakitci.util
+package com.rahmanyazgan.pyvakitci.util
 
 import com.rahmanyazgan.pyvakitci.data.model.ActivePrayerInfo
 import com.rahmanyazgan.pyvakitci.data.model.PrayerKind
@@ -9,12 +9,13 @@ import java.util.Locale
 
 object TimeUtil {
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    private val displayDateFormat = SimpleDateFormat("d MMMM yyyy", Locale("tr"))
     private val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
 
     fun getTodayString(): String = dateFormat.format(Calendar.getInstance().time)
+
+    /** Seçili uygulama diline göre uzun tarih (örn. "31 Ekim 2026", "October 31, 2026", "2026年10月31日"). */
     fun getDisplayDate(calendar: Calendar = Calendar.getInstance()): String =
-        displayDateFormat.format(calendar.time)
+        java.text.DateFormat.getDateInstance(java.text.DateFormat.LONG, L10n.locale()).format(calendar.time)
 
     fun getCurrentTimeString(): String = timeFormat.format(Calendar.getInstance().time)
 

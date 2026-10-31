@@ -40,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rahmanyazgan.pyvakitci.ui.theme.AppColors
+import com.rahmanyazgan.pyvakitci.util.L10n
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -99,7 +100,7 @@ fun QiblaScreen(
                 ) {
                     Column {
                         Text(
-                            text = "Kıble Pusulası",
+                            text = L10n.t("q_title"),
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
                             color = colors.text
@@ -120,7 +121,7 @@ fun QiblaScreen(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = if (hasGps) "Canlı GPS" else "Kayıtlı Konum",
+                            text = if (hasGps) L10n.t("q_live_gps") else L10n.t("q_saved_loc"),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = if (hasGps) alignedGreen else colors.primary
@@ -131,7 +132,7 @@ fun QiblaScreen(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = String.format("Koordinat: %.4f° K, %.4f° D", latitude, longitude),
+                    text = L10n.f("q_coord", latitude, longitude),
                     fontSize = 11.sp,
                     color = colors.text.copy(alpha = 0.5f)
                 )
@@ -157,7 +158,7 @@ fun QiblaScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "✦ KIBLEYE YÖNELDİNİZ ✦",
+                        text = L10n.t("q_banner"),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -259,7 +260,7 @@ fun QiblaScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = if (isAligned) "Kıble Yönündesiniz" else "Kıble Açısı: ${qiblaAngle.toInt()}°",
+                    text = if (isAligned) L10n.t("q_on_dir") else L10n.f("q_angle", qiblaAngle.toInt()),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = if (isAligned) alignedGreen else colors.text
@@ -267,9 +268,9 @@ fun QiblaScreen(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = if (isAligned)
-                        "Cihaz şu an tam Kâbe istikametindedir."
+                        L10n.t("q_desc_aligned")
                     else
-                        "Cihazı yatay tutup altın ibre tepeye gelene kadar dönünüz.",
+                        L10n.t("q_desc_turn"),
                     fontSize = 12.sp,
                     color = colors.text.copy(alpha = 0.7f)
                 )
@@ -295,7 +296,7 @@ fun QiblaScreen(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "Konumumu GPS ile Doğrula",
+                text = L10n.t("q_verify_gps"),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = colors.primary

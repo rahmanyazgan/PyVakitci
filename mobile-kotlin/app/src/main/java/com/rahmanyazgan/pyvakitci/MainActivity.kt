@@ -43,6 +43,7 @@ import com.rahmanyazgan.pyvakitci.ui.screens.WeatherScreen
 import com.rahmanyazgan.pyvakitci.ui.theme.PyVakitciTheme
 import com.rahmanyazgan.pyvakitci.ui.theme.getAppColors
 import com.rahmanyazgan.pyvakitci.util.TimeUtil
+import com.rahmanyazgan.pyvakitci.util.L10n
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -61,6 +62,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        L10n.init(this)
         prefs = PreferencesManager(this)
         dbHelper = AppDatabaseHelper(this)
         diyanetApi = DiyanetApiService()
@@ -306,7 +308,7 @@ class MainActivity : ComponentActivity() {
                             hasGps = hasGps,
                             latitude = currentLat,
                             longitude = currentLon,
-                            locationName = if (hasGps) "Canlı GPS Konumu" else "${prefs.location.cityName} / ${prefs.location.districtName}",
+                            locationName = if (hasGps) L10n.t("q_live_gps_loc") else "${prefs.location.cityName} / ${prefs.location.districtName}",
                             colors = appColors,
                             onRefreshLocation = {
                                 compassManager?.requestLocationUpdates()

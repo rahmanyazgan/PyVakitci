@@ -178,6 +178,7 @@ private:
     QLabel* m_klasikKalanSureLabel = nullptr;
     QLabel* m_klasikDiniGunLabel = nullptr;
     QMap<QString, QLabel*> m_klasikVakitLabels;
+    QMap<QString, QLabel*> m_klasikVakitAdLabels;
 
     // Sekme 1: Hava Durumu
     QWidget* m_havaTab = nullptr;
@@ -192,6 +193,7 @@ private:
     QLabel* m_lblBolgeselUlke = nullptr;
     QLabel* m_lblBolgeselSehir = nullptr;
     QLabel* m_lblBolgeselIlce = nullptr;
+    QLabel* m_lblBolgeselDil = nullptr;
     QCheckBox* m_chkOtoCalistir = nullptr;
     QCheckBox* m_chkIkonGoster = nullptr;
     QCheckBox* m_chkSistemTepsisindeBaslat = nullptr;
@@ -206,22 +208,44 @@ private:
     QSpinBox* m_spnErkenSela = nullptr;
     QCheckBox* m_chkHicriGun = nullptr;
     QSpinBox* m_spnHicriGun = nullptr;
+    QPushButton* m_btnGoster = nullptr;
+    QPushButton* m_btnGuncelle = nullptr;
+    QPushButton* m_btnVarsayilan = nullptr;
+    QPushButton* m_btnKaydet = nullptr;
+    QPushButton* m_btnBolgeVarsayilan = nullptr;
+    QPushButton* m_btnBolgeKaydet = nullptr;
     QComboBox* m_cmbUlke = nullptr;
     QComboBox* m_cmbSehir = nullptr;
     QComboBox* m_cmbIlce = nullptr;
+    QComboBox* m_cmbDil = nullptr;
+    void onDilDegisti(int index);
+    void retranslateUi();
 
     // Sekme 3: Ses Ayarları
     QWidget* m_sesTab = nullptr;
+    QMap<QString, QLabel*> m_sesLabels;
     QMap<QString, QLineEdit*> m_sesEdits;
+    QMap<QString, QToolButton*> m_sesEkleBtns;
     QMap<QString, QCheckBox*> m_sesChecks;
     QMap<QString, QToolButton*> m_sesPlayBtns;
+    QPushButton* m_btnSesVarsayilan = nullptr;
+    QPushButton* m_btnSesKaydet = nullptr;
     QSlider* m_sesSlider = nullptr;
 
     // Sekme 4: Linkler
     QWidget* m_linkTab = nullptr;
+    QGroupBox* m_linklerBox = nullptr;
     QList<QLabel*> m_linkLabels;
 
     // Menü Actions
+    QMenu* m_menuDosya = nullptr;
+    QMenu* m_menuGorunum = nullptr;
+    QMenu* m_menuTema = nullptr;
+    QMenu* m_menuStil = nullptr;
+    QMenu* m_menuYardim = nullptr;
+    QAction* m_actLisans = nullptr;
+    QAction* m_actHakkinda = nullptr;
+    QAction* m_actQt = nullptr;
     QActionGroup* m_arayuzGroup = nullptr;
     QActionGroup* m_temaGroup = nullptr;
     QActionGroup* m_stilGroup = nullptr;

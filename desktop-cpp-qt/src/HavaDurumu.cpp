@@ -1,5 +1,6 @@
 #include "HavaDurumu.h"
 #include "HttpClient.h"
+#include "Localization.h"
 #include <QPainter>
 #include <QPainterPath>
 #include <QDateTime>
@@ -14,37 +15,17 @@
 #endif
 
 static QPair<QString, QString> wmoDurumGetir(int kod) {
-    static const QMap<int, QPair<QString, QString>> wmo = {
-        {0, {"Açık", "gunesli"}},
-        {1, {"Az Bulutlu", "az_bulutlu"}},
-        {2, {"Parçalı Bulutlu", "parcali_bulutlu"}},
-        {3, {"Çok Bulutlu", "bulutlu"}},
-        {45, {"Sisli", "sisli"}},
-        {48, {"Kırağılı Sis", "sisli"}},
-        {51, {"Hafif Çisenti", "yagmurlu"}},
-        {53, {"Çisenti", "yagmurlu"}},
-        {55, {"Yoğun Çisenti", "yagmurlu"}},
-        {56, {"Dondurucu Çisenti", "yagmurlu"}},
-        {57, {"Yoğun Dondurucu Çisenti", "yagmurlu"}},
-        {61, {"Hafif Yağmurlu", "yagmurlu"}},
-        {63, {"Yağmurlu", "yagmurlu"}},
-        {65, {"Şiddetli Yağmurlu", "saganak"}},
-        {66, {"Dondurucu Yağmur", "saganak"}},
-        {67, {"Şiddetli Dondurucu Yağmur", "saganak"}},
-        {71, {"Hafif Kar Yağışlı", "karli"}},
-        {73, {"Kar Yağışlı", "karli"}},
-        {75, {"Yoğun Kar Yağışlı", "karli"}},
-        {77, {"Kar Taneleri", "karli"}},
-        {80, {"Hafif Sağanak", "saganak"}},
-        {81, {"Sağanak Yağışlı", "saganak"}},
-        {82, {"Şiddetli Sağanak", "saganak"}},
-        {85, {"Hafif Kar Sağanağı", "karli"}},
-        {86, {"Yoğun Kar Sağanağı", "karli"}},
-        {95, {"Gök Gürültülü Fırtına", "firtina"}},
-        {96, {"Dolu ve Fırtına", "firtina"}},
-        {99, {"Şiddetli Dolu Fırtınası", "firtina"}}
+    static const QMap<int, QString> wmoTipler = {
+        {0, "gunesli"}, {1, "az_bulutlu"}, {2, "parcali_bulutlu"}, {3, "bulutlu"},
+        {45, "sisli"}, {48, "sisli"}, {51, "yagmurlu"}, {53, "yagmurlu"}, {55, "yagmurlu"},
+        {56, "yagmurlu"}, {57, "yagmurlu"}, {61, "yagmurlu"}, {63, "yagmurlu"}, {65, "saganak"},
+        {66, "saganak"}, {67, "saganak"}, {71, "karli"}, {73, "karli"}, {75, "karli"},
+        {77, "karli"}, {80, "saganak"}, {81, "saganak"}, {82, "saganak"}, {85, "karli"},
+        {86, "karli"}, {95, "firtina"}, {96, "firtina"}, {99, "firtina"}
     };
-    return wmo.value(kod, {"Açık", "gunesli"});
+    QString tip = wmoTipler.value(kod, "gunesli");
+    QString durum = Localization::weatherDescription(kod);
+    return {durum, tip};
 }
 
 static const QMap<QString, QPair<double, double>>& getTurkiyeKoordinatlari() {
@@ -174,13 +155,11 @@ void HavaDurumuThread::run() {
     QJsonArray mins = daily.value("temperature_2m_min").toArray();
     QJsonArray probs = daily.value("precipitation_probability_max").toArray();
 
-    static const QStringList gunAdlari = {"Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"};
-
     int limit = std::min(5, static_cast<int>(times.size()));
     for (int i = 0; i < limit; ++i) {
         QString tarihStr = times[i].toString();
         QDate dt = QDate::fromString(tarihStr, Qt::ISODate);
-        QString gunAd = (i == 0) ? "Bugün" : (dt.isValid() ? gunAdlari[(dt.dayOfWeek() - 1) % 7] : tarihStr);
+        QString gunAd = (i == 0) ? Localization::tr("bugun") : (dt.isValid() ? Localization::dayName(dt.dayOfWeek()) : tarihStr);
 
         int dc = (i < codes.size()) ? codes[i].toInt(0) : 0;
         auto dCift = wmoDurumGetir(dc);
@@ -212,19 +191,27 @@ HavaDurumuWidget::HavaDurumuWidget(QWidget* parent) : QWidget(parent) {
     setGeometry(10, 8, 306, 378);
     setObjectName("hava_durumu_widget");
 
-    m_yenileBtn = new QPushButton("↻ Yenile", this);
+    m_yenileBtn = new QPushButton("↻", this);
     m_yenileBtn->setGeometry(228, 12, 64, 24);
     m_yenileBtn->setCursor(Qt::PointingHandCursor);
-    m_yenileBtn->setToolTip("Hava durumunu şimdi güncelle");
     connect(m_yenileBtn, &QPushButton::clicked, this, [this]() {
         havaDurumunuGuncelle(true);
     });
+    retranslateUi();
 }
 
 HavaDurumuWidget::~HavaDurumuWidget() {
     if (m_aktifThread && m_aktifThread->isRunning()) {
         m_aktifThread->wait(2000);
     }
+}
+
+void HavaDurumuWidget::retranslateUi() {
+    if (m_yenileBtn) {
+        m_yenileBtn->setText(QString("↻ %1").arg(Localization::tr("yenile")));
+        m_yenileBtn->setToolTip(Localization::tr("hava_yenile_tooltip"));
+    }
+    update();
 }
 
 void HavaDurumuWidget::temaAyarla(const QString& tema) {
@@ -411,14 +398,14 @@ void HavaDurumuWidget::paintEvent(QPaintEvent*) {
     if (m_yukleniyor && !m_veri.gecerli) {
         p.setPen(ustYaziRenk);
         p.setFont(QFont("Segoe UI", 10, QFont::Bold));
-        p.drawText(QRectF(20, 150, 266, 40), Qt::AlignCenter, "Hava durumu yükleniyor...");
+        p.drawText(QRectF(20, 150, 266, 40), Qt::AlignCenter, Localization::tr("hava_yukleniyor"));
         return;
     }
 
     if (!m_hataMesaji.isEmpty() && !m_veri.gecerli) {
         p.setPen(QColor(239, 68, 68));
         p.setFont(QFont("Segoe UI", 9, QFont::Bold));
-        p.drawText(QRectF(20, 150, 266, 40), Qt::AlignCenter, m_hataMesaji);
+        p.drawText(QRectF(20, 150, 266, 40), Qt::AlignCenter, Localization::tr("hava_hata"));
         return;
     }
 
@@ -459,7 +446,7 @@ void HavaDurumuWidget::paintEvent(QPaintEvent*) {
         p.drawText(
             QRectF(24, 126, 185, 18),
             Qt::AlignLeft | Qt::AlignVCenter,
-            QString("En Yüksek: %1°   •   En Düşük: %2°").arg(bgn.tMax).arg(bgn.tMin)
+            QString("%1: %2°   •   %3: %4°").arg(Localization::tr("en_yuksek")).arg(bgn.tMax).arg(Localization::tr("en_dusuk")).arg(bgn.tMin)
         );
     }
 
@@ -469,9 +456,9 @@ void HavaDurumuWidget::paintEvent(QPaintEvent*) {
     // 4. Üçlü Detay Kutuları (Hissedilen, Nem, Rüzgâr)
     struct DetayKutu { QString etiket; QString deger; };
     QVector<DetayKutu> detaylar = {
-        {"Hissedilen", QString("%1°C").arg(m_veri.hissedilen)},
-        {"Nem Oranı", QString("%%1").arg(m_veri.nem)},
-        {"Rüzgâr", QString("%1 km/s").arg(m_veri.ruzgar)}
+        {Localization::tr("hava_hissedilen"), QString("%1°C").arg(m_veri.hissedilen)},
+        {Localization::tr("hava_nem"), QString("%%1").arg(m_veri.nem)},
+        {Localization::tr("hava_ruzgar"), QString("%1 km/s").arg(m_veri.ruzgar)}
     };
     for (int idx = 0; idx < detaylar.size(); ++idx) {
         double dx = 12.0 + idx * 96.0;
@@ -498,11 +485,11 @@ void HavaDurumuWidget::paintEvent(QPaintEvent*) {
     // 5. 5 Günlük Hava Tahmini Satırları
     p.setPen(ustYaziRenk);
     p.setFont(QFont("Segoe UI", 8, QFont::Bold));
-    p.drawText(QRectF(14, 214, 180, 16), Qt::AlignLeft | Qt::AlignVCenter, "5 GÜNLÜK TAHMİN");
+    p.drawText(QRectF(14, 214, 180, 16), Qt::AlignLeft | Qt::AlignVCenter, Localization::tr("hava_tahmin"));
     p.drawText(
         QRectF(180, 214, 112, 16),
         Qt::AlignRight | Qt::AlignVCenter,
-        QString("Saat: %1").arg(m_veri.guncellemeSaati)
+        Localization::tr("hava_saat").arg(m_veri.guncellemeSaati)
     );
 
     double basY = 233.0;

@@ -1,4 +1,4 @@
-﻿package com.rahmanyazgan.pyvakitci.ui.screens
+package com.rahmanyazgan.pyvakitci.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +31,7 @@ import com.rahmanyazgan.pyvakitci.ui.components.PrayerClockDial
 import com.rahmanyazgan.pyvakitci.ui.components.PrayerGrid
 import com.rahmanyazgan.pyvakitci.ui.theme.AppColors
 import com.rahmanyazgan.pyvakitci.util.TimeUtil
+import com.rahmanyazgan.pyvakitci.util.L10n
 
 @Composable
 fun HomeScreen(
@@ -156,7 +157,7 @@ fun HomeScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "${activeInfo.currentPrayer.uppercaseTitle} VAKTİ",
+                            text = L10n.f("h_time_of", activeInfo.currentPrayer.uppercaseTitle),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = colors.primary
@@ -204,7 +205,7 @@ fun HomeScreen(
 
         // Source Footer
         Text(
-            text = "Kaynak: diyanet.gov.tr",
+            text = L10n.t("h_source"),
             fontSize = 11.sp,
             color = colors.text.copy(alpha = 0.45f)
         )

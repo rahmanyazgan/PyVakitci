@@ -1,4 +1,4 @@
-﻿package com.rahmanyazgan.pyvakitci.ui.screens
+package com.rahmanyazgan.pyvakitci.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +25,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rahmanyazgan.pyvakitci.data.model.WeatherData
 import com.rahmanyazgan.pyvakitci.ui.theme.AppColors
+import com.rahmanyazgan.pyvakitci.util.L10n
+import java.text.SimpleDateFormat
+import java.util.Locale
+
+/** "yyyy-MM-dd" tarihinden seçili dilde gün adı üretir (Pazartesi / Monday / 星期一 ...). */
+private fun localizedDayName(date: String, fallback: String): String {
+    return try {
+        val parsed = SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(date) ?: return fallback
+        val loc = L10n.locale()
+        SimpleDateFormat("EEEE", loc).format(parsed).replaceFirstChar { it.uppercase(loc) }
+    } catch (_: Exception) {
+        fallback
+    }
+}
 
 @Composable
 fun WeatherScreen(
@@ -74,7 +88,7 @@ fun WeatherScreen(
                     color = Color.White
                 )
                 Text(
-                    text = weatherData.current.weatherDescription,
+                    text = L10n.weather(weatherData.current.weatherCode),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.White.copy(alpha = 0.9f)
@@ -85,9 +99,9 @@ fun WeatherScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    WeatherDetailItem(label = "Hissedilen", value = "${weatherData.current.apparentTemperature.toInt()}°C")
-                    WeatherDetailItem(label = "Nem", value = "%${weatherData.current.humidity}")
-                    WeatherDetailItem(label = "Rüzgar", value = "${weatherData.current.windSpeed.toInt()} km/s")
+                    WeatherDetailItem(label = L10n.t("w_feels"), value = "${weatherData.current.apparentTemperature.toInt()}°C")
+                    WeatherDetailItem(label = L10n.t("w_humidity"), value = "%${weatherData.current.humidity}")
+                    WeatherDetailItem(label = L10n.t("w_wind"), value = "${weatherData.current.windSpeed.toInt()} ${L10n.t("w_wind_unit")}")
                 }
             }
         }
@@ -96,7 +110,7 @@ fun WeatherScreen(
 
         // 5-Day Forecast Header
         Text(
-            text = "5 Günlük Hava Tahmini",
+            text = L10n.t("w_forecast"),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             color = colors.text,
@@ -124,13 +138,13 @@ fun WeatherScreen(
                 ) {
                     Column {
                         Text(
-                            text = forecast.dayName,
+                            text = localizedDayName(forecast.date, forecast.dayName),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = colors.text
                         )
                         Text(
-                            text = forecast.description,
+                            text = L10n.weather(forecast.weatherCode),
                             fontSize = 12.sp,
                             color = colors.text.copy(alpha = 0.6f)
                         )

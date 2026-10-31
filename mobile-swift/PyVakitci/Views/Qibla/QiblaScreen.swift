@@ -1,6 +1,7 @@
 import SwiftUI
 
 public struct QiblaScreen: View {
+    @ObservedObject private var loc = LocalizationManager.shared
     public let heading: Double
     public let relativeQiblaAngle: Double
     public let isAligned: Bool
@@ -41,7 +42,7 @@ public struct QiblaScreen: View {
             VStack(spacing: 6) {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Kıble Pusulası")
+                        Text(loc.tr("q_title"))
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(colors.text)
 
@@ -56,13 +57,13 @@ public struct QiblaScreen: View {
                         Image(systemName: hasGps ? "location.fill" : "location")
                             .font(.system(size: 14))
                             .foregroundColor(hasGps ? alignedGreen : colors.primary)
-                        Text(hasGps ? "Canlı GPS" : "Kayıtlı Konum")
+                        Text(hasGps ? loc.tr("q_live_gps") : loc.tr("q_saved_loc"))
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundColor(hasGps ? alignedGreen : colors.primary)
                     }
                 }
 
-                Text(String(format: "Koordinat: %.4f° K, %.4f° D", latitude, longitude))
+                Text(loc.f("q_coord", latitude, longitude))
                     .font(.system(size: 11))
                     .foregroundColor(colors.text.opacity(0.45))
             }
@@ -75,7 +76,7 @@ public struct QiblaScreen: View {
             // Aligned Badge
             if isAligned {
                 HStack {
-                    Text("✦ KIBLEYE YÖNELDİNİZ ✦")
+                    Text(loc.tr("q_banner"))
                         .font(.system(size: 14, weight: .bold))
                         .foregroundColor(.white)
                 }
@@ -132,11 +133,11 @@ public struct QiblaScreen: View {
 
             // Direction Guidance Card
             VStack(spacing: 4) {
-                Text(isAligned ? "Kıble Yönündesiniz" : "Kıble Açısı: \(Int(relativeQiblaAngle))°")
+                Text(isAligned ? loc.tr("q_on_dir") : loc.f("q_angle", Int(relativeQiblaAngle)))
                     .font(.system(size: 20, weight: .black))
                     .foregroundColor(isAligned ? alignedGreen : colors.text)
 
-                Text(isAligned ? "Cihaz şu an tam Kâbe istikametindedir." : "Cihazı yatay tutup altın ibre tepeye gelene kadar dönünüz.")
+                Text(isAligned ? loc.tr("q_desc_aligned") : loc.tr("q_desc_turn"))
                     .font(.system(size: 12))
                     .foregroundColor(colors.text.opacity(0.7))
             }
@@ -150,7 +151,7 @@ public struct QiblaScreen: View {
             Button(action: onRefreshLocation) {
                 HStack(spacing: 6) {
                     Image(systemName: "location.fill")
-                    Text("Konumumu GPS ile Doğrula")
+                    Text(loc.tr("q_verify_gps"))
                 }
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundColor(colors.primary)

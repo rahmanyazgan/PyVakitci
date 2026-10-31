@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PyVakitci</string>
+    <string name="vakit_saati">Часы намаза</string>
+    <string name="hava_durumu">Погода</string>
+    <string name="kible_pusulasi">Компас Киблы</string>
+    <string name="ayarlar">Настройки</string>
+    <string name="ses_ayarlari">Настройки звука</string>
+
+    <string name="imsak">Фаджр</string>
+    <string name="gunes">Восход</string>
+    <string name="ogle">Зухр</string>
+    <string name="ikindi">Аср</string>
+    <string name="aksam">Магриб</string>
+    <string name="yatsi">Иша</string>
+
+    <string name="kaynak_diyanet">Источник: diyanet.gov.tr</string>
+</resources>
+

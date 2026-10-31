@@ -1,4 +1,4 @@
-﻿package com.rahmanyazgan.pyvakitci.ui.components
+package com.rahmanyazgan.pyvakitci.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rahmanyazgan.pyvakitci.data.model.PrayerKind
+import com.rahmanyazgan.pyvakitci.util.L10n
 
 @Composable
 fun PrayerGrid(
@@ -118,7 +119,7 @@ fun PrayerCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = title,
+                    text = L10n.prayerFromTr(title),
                     fontSize = 12.sp,
                     color = if (isActive) activeBorderColor else textColor.copy(alpha = 0.7f),
                     fontWeight = if (isActive) FontWeight.Bold else FontWeight.Medium

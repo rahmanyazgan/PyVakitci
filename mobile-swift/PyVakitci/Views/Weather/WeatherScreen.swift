@@ -1,6 +1,7 @@
 import SwiftUI
 
 public struct WeatherScreen: View {
+    @ObservedObject private var loc = LocalizationManager.shared
     public let locationName: String
     public let weatherData: WeatherData
     public let colors: AppThemeColors
@@ -24,14 +25,14 @@ public struct WeatherScreen: View {
                         .font(.system(size: 56, weight: .black, design: .rounded))
                         .foregroundColor(.white)
 
-                    Text(weatherData.current.weatherDescription)
+                    Text(loc.weatherDescription(code: weatherData.current.weatherCode))
                         .font(.system(size: 16, weight: .medium))
                         .foregroundColor(.white.opacity(0.9))
 
                     HStack(spacing: 30) {
-                        weatherItem(label: "Hissedilen", value: "\(Int(weatherData.current.apparentTemperature))°C")
-                        weatherItem(label: "Nem", value: "%\(weatherData.current.humidity)")
-                        weatherItem(label: "Rüzgar", value: "\(Int(weatherData.current.windSpeed)) km/s")
+                        weatherItem(label: loc.tr("w_feels"), value: "\(Int(weatherData.current.apparentTemperature))°C")
+                        weatherItem(label: loc.tr("w_humidity"), value: "%\(weatherData.current.humidity)")
+                        weatherItem(label: loc.tr("w_wind"), value: "\(Int(weatherData.current.windSpeed)) \(loc.tr("w_wind_unit"))")
                     }
                     .padding(.top, 8)
                 }
@@ -49,7 +50,7 @@ public struct WeatherScreen: View {
 
                 // 5-Day Forecast
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("5 Günlük Hava Tahmini")
+                    Text(loc.tr("w_forecast"))
                         .font(.system(size: 16, weight: .bold))
                         .foregroundColor(colors.text)
 
@@ -60,7 +61,7 @@ public struct WeatherScreen: View {
                                     .font(.system(size: 14, weight: .bold))
                                     .foregroundColor(colors.text)
 
-                                Text(forecast.description)
+                                Text(loc.weatherDescription(code: forecast.weatherCode))
                                     .font(.system(size: 12))
                                     .foregroundColor(colors.text.opacity(0.6))
                             }

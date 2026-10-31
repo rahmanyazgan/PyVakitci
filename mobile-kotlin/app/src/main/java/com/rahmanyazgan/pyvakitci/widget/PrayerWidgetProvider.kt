@@ -12,6 +12,7 @@ import com.rahmanyazgan.pyvakitci.R
 import com.rahmanyazgan.pyvakitci.data.local.AppDatabaseHelper
 import com.rahmanyazgan.pyvakitci.data.local.PreferencesManager
 import com.rahmanyazgan.pyvakitci.util.TimeUtil
+import com.rahmanyazgan.pyvakitci.util.L10n
 
 class PrayerWidgetProvider : AppWidgetProvider() {
 
@@ -33,6 +34,7 @@ class PrayerWidgetProvider : AppWidgetProvider() {
     }
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
+        L10n.init(context)
         val prefs = PreferencesManager(context)
         val db = AppDatabaseHelper(context)
         val today = TimeUtil.getTodayString()
@@ -50,12 +52,13 @@ class PrayerWidgetProvider : AppWidgetProvider() {
                 views.setTextViewText(R.id.widget_countdown, active.remainingFormatted)
                 views.setTextViewText(
                     R.id.widget_times_summary,
-                    "İmsak: ${times.imsak} | Güneş: ${times.gunes} | Öğle: ${times.ogle}\nİkindi: ${times.ikindi} | Akşam: ${times.aksam} | Yatsı: ${times.yatsi}"
+                    "${L10n.t("p_imsak")}: ${times.imsak} | ${L10n.t("p_gunes")}: ${times.gunes} | ${L10n.t("p_ogle")}: ${times.ogle}\n" +
+                        "${L10n.t("p_ikindi")}: ${times.ikindi} | ${L10n.t("p_aksam")}: ${times.aksam} | ${L10n.t("p_yatsi")}: ${times.yatsi}"
                 )
             } else {
                 views.setTextViewText(R.id.widget_current_prayer, "--")
                 views.setTextViewText(R.id.widget_countdown, "--:--:--")
-                views.setTextViewText(R.id.widget_times_summary, "Vakitleri yüklemek için dokunun")
+                views.setTextViewText(R.id.widget_times_summary, L10n.t("wg_tap_load"))
             }
 
             val intent = Intent(context, MainActivity::class.java)

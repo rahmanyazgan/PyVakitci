@@ -1,6 +1,7 @@
 import SwiftUI
 
 public struct AudioSettingsScreen: View {
+    @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject public var audioPlayer = AudioPlayerService.shared
     public let colors: AppThemeColors
 
@@ -27,13 +28,13 @@ public struct AudioSettingsScreen: View {
     public var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 18) {
-                Text("Ezan ve Vakit Sesleri")
+                Text(loc.tr("a_title"))
                     .font(.system(size: 22, weight: .bold))
                     .foregroundColor(colors.text)
 
                 // 1. Vakit Ses Modları (Ezan / Bip / Sessiz)
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("VAKİT UYARI MODLARI")
+                    Text(loc.tr("a_sound_mode").uppercased(with: loc.currentLocale))
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(colors.primary)
 
@@ -56,18 +57,18 @@ public struct AudioSettingsScreen: View {
 
                 // 2. Vakit Öncesi Uyarı Kartı
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("VAKİT ÖNCESİ HATIRLATICI")
+                    Text(loc.tr("a_warn_title").uppercased(with: loc.currentLocale))
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(colors.primary)
 
                     VStack(spacing: 12) {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
-                                Text("Vakit Öncesi Uyarı Sesi")
+                                Text(loc.tr("a_warn_title"))
                                     .font(.system(size: 15, weight: .bold))
                                     .foregroundColor(colors.text)
 
-                                Text("Vakit girmeden önce kısa uyarı bildirimi verir")
+                                Text(loc.f("a_warn_desc", warningMinutes))
                                     .font(.system(size: 11))
                                     .foregroundColor(colors.text.opacity(0.6))
                             }
@@ -270,7 +271,7 @@ public struct PrayerSoundModeCard: View {
         VStack(spacing: 10) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(name)
+                    Text(LocalizationManager.shared.prayerFromTr(name))
                         .font(.system(size: 16, weight: .bold))
                         .foregroundColor(colors.text)
 
@@ -299,7 +300,7 @@ public struct PrayerSoundModeCard: View {
                         HStack(spacing: 4) {
                             Image(systemName: iconForMode(mode))
                                 .font(.system(size: 11))
-                            Text(mode.title)
+                            Text(mode.localizedTitle)
                                 .font(.system(size: 12, weight: .semibold))
                         }
                         .foregroundColor(currentMode == mode ? .white : colors.text)

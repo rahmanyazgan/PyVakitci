@@ -4,6 +4,7 @@
 #include "HttpClient.h"
 #include "Dialogs.h"
 #include "Clever.h"
+#include "Localization.h"
 
 #include <QApplication>
 #include <QDesktopWidget>
@@ -55,6 +56,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
         QFile::copy(m_ayarlarKonum + "/ayarlar.ini", m_ayarDosyasi);
     }
     m_settings = new QSettings(m_ayarDosyasi, QSettings::IniFormat, this);
+    Localization::init();
+    QString kayitliDil = m_settings->value("Ayarlar/dil", Localization::detectSystemLanguage()).toString();
+    Localization::setLanguage(kayitliDil);
 
     m_veritabaniDosyasi = m_ayarlarKonum + "/diyanet.db";
     m_vakitler = new Vakitler(m_veritabaniDosyasi, this);
@@ -80,6 +84,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     m_clockTimer->start(600);
 
     ayarlariUygula();
+    retranslateUi();
     trayIconGoster();
     hicriTarihiGuncelle();
     onSaatGuncelle();
@@ -134,7 +139,7 @@ void MainWindow::setupUI() {
     sb->setObjectName("statusbar");
     sb->setFont(QFont("Arial", 10));
     setStatusBar(sb);
-    sb->showMessage("Kaynak: diyanet.gov.tr");
+    sb->showMessage(Localization::tr("kaynak"));
 }
 
 QIcon MainWindow::havaDurumuIkonuOlustur() {
@@ -249,6 +254,7 @@ void MainWindow::setupVakitTab() {
         val->setFont(QFont("Arial", 11));
         val->setObjectName(vakitKeys[i] + "_saat_label");
         m_klasikVakitLabels[vakitKeys[i]] = val;
+        m_klasikVakitAdLabels[vakitKeys[i]] = ad;
     }
 
     m_klasikSonrakiVakitLabel = new QLabel("...", m_namazVakitleriGroupBox);
@@ -460,7 +466,7 @@ void MainWindow::setupAyarlarTab() {
     connect(m_chkWinamp, &QCheckBox::stateChanged, this, &MainWindow::winampVarMi);
 
     m_chkErkenUyari = new QCheckBox("Vakit girmeden önce uyar (dk) :", m_genelAyarlarBox);
-    m_chkErkenUyari->setGeometry(10, 180, 285, 22);
+    m_chkErkenUyari->setGeometry(10, 180, 225, 22);
     m_chkErkenUyari->setFont(ayarFont);
     m_chkErkenUyari->setObjectName("erken_uyari_checkBox");
     connect(m_chkErkenUyari, &QCheckBox::stateChanged, this, &MainWindow::erkenUyariKontrolWidget);
@@ -472,7 +478,7 @@ void MainWindow::setupAyarlarTab() {
     m_spnErkenUyari->setObjectName("erken_uyari_spinBox");
 
     m_chkErkenSela = new QCheckBox("Selayı vakit girmeden oku (dk) :", m_genelAyarlarBox);
-    m_chkErkenSela->setGeometry(10, 204, 285, 22);
+    m_chkErkenSela->setGeometry(10, 204, 225, 22);
     m_chkErkenSela->setFont(ayarFont);
     m_chkErkenSela->setObjectName("erken_uyari_sela_checkBox");
 
@@ -483,7 +489,7 @@ void MainWindow::setupAyarlarTab() {
     m_spnErkenSela->setObjectName("erken_uyari_sela_spinBox");
 
     m_chkHicriGun = new QCheckBox("Hicri tarihe gün ilave et :", m_genelAyarlarBox);
-    m_chkHicriGun->setGeometry(10, 228, 285, 22);
+    m_chkHicriGun->setGeometry(10, 228, 225, 22);
     m_chkHicriGun->setFont(ayarFont);
     m_chkHicriGun->setToolTip("Hicri tarihteki gecikmeyi önlemek için kullanabilirsiniz. Ayda bir hicri tarihi başka kaynaktan kontrol etmek gerekebilir.");
     m_chkHicriGun->setObjectName("hicri_gun_ekle_checkBox");
@@ -493,31 +499,31 @@ void MainWindow::setupAyarlarTab() {
     m_spnHicriGun->setRange(-1, 1);
     m_spnHicriGun->setObjectName("hicri_tarih_gun_ekle_spinBox");
 
-    QPushButton* btnGoster = new QPushButton(" Vakitleri aylık olarak göster", m_genelAyarlarBox);
-    btnGoster->setGeometry(21, 254, 263, 25);
-    btnGoster->setFont(ayarFont);
-    btnGoster->setObjectName("vakitleri_goster_pushButton");
-    connect(btnGoster, &QPushButton::clicked, this, &MainWindow::vakitleriTopluGoster);
+    m_btnGoster = new QPushButton(" Vakitleri aylık olarak göster", m_genelAyarlarBox);
+    m_btnGoster->setGeometry(21, 254, 263, 25);
+    m_btnGoster->setFont(ayarFont);
+    m_btnGoster->setObjectName("vakitleri_goster_pushButton");
+    connect(m_btnGoster, &QPushButton::clicked, this, &MainWindow::vakitleriTopluGoster);
 
-    QPushButton* btnGuncelle = new QPushButton("Aylık vakitleri şimdi güncelle", m_genelAyarlarBox);
-    btnGuncelle->setGeometry(21, 283, 263, 25);
-    btnGuncelle->setFont(ayarFont);
-    btnGuncelle->setObjectName("vakitleri_guncelle_pushButton");
-    connect(btnGuncelle, &QPushButton::clicked, this, &MainWindow::diyanetAylikVakitleriKaydet);
+    m_btnGuncelle = new QPushButton("Aylık vakitleri şimdi güncelle", m_genelAyarlarBox);
+    m_btnGuncelle->setGeometry(21, 283, 263, 25);
+    m_btnGuncelle->setFont(ayarFont);
+    m_btnGuncelle->setObjectName("vakitleri_guncelle_pushButton");
+    connect(m_btnGuncelle, &QPushButton::clicked, this, &MainWindow::diyanetAylikVakitleriKaydet);
 
-    QPushButton* btnVarsayilan = new QPushButton("Varsayılan", m_genelAyarlarBox);
-    btnVarsayilan->setGeometry(110, 313, 85, 27);
-    btnVarsayilan->setFont(ayarFont);
-    btnVarsayilan->setToolTip("Varsayılan ayarlara dönmek isterseniz buraya tıklayın.");
-    btnVarsayilan->setObjectName("ayarlar_varsayilan_pushButton");
-    connect(btnVarsayilan, &QPushButton::clicked, this, &MainWindow::varsayilanAyarlar);
+    m_btnVarsayilan = new QPushButton("Varsayılan", m_genelAyarlarBox);
+    m_btnVarsayilan->setGeometry(15, 313, 126, 27);
+    m_btnVarsayilan->setFont(ayarFont);
+    m_btnVarsayilan->setToolTip("Varsayılan ayarlara dönmek isterseniz buraya tıklayın.");
+    m_btnVarsayilan->setObjectName("ayarlar_varsayilan_pushButton");
+    connect(m_btnVarsayilan, &QPushButton::clicked, this, &MainWindow::varsayilanAyarlar);
 
-    QPushButton* btnKaydet = new QPushButton("Kaydet", m_genelAyarlarBox);
-    btnKaydet->setGeometry(200, 313, 85, 27);
-    btnKaydet->setFont(ayarFont);
-    btnKaydet->setToolTip("Program kapanıp açıldığında yaptığınız değişikliklerin\nhatırlanması için buraya tıklayın.");
-    btnKaydet->setObjectName("ayarlar_kaydet_pushButton");
-    connect(btnKaydet, &QPushButton::clicked, this, &MainWindow::ayarlariKaydet);
+    m_btnKaydet = new QPushButton("Kaydet", m_genelAyarlarBox);
+    m_btnKaydet->setGeometry(155, 313, 126, 27);
+    m_btnKaydet->setFont(ayarFont);
+    m_btnKaydet->setToolTip("Program kapanıp açıldığında yaptığınız değişikliklerin\nhatırlanması için buraya tıklayın.");
+    m_btnKaydet->setObjectName("ayarlar_kaydet_pushButton");
+    connect(m_btnKaydet, &QPushButton::clicked, this, &MainWindow::ayarlariKaydet);
 
     // 2. Bölgesel Ayarlar GroupBox
     m_bolgeselAyarlarBox = new QGroupBox(m_ayarlarTab);
@@ -558,19 +564,35 @@ void MainWindow::setupAyarlarTab() {
     m_cmbIlce->setFont(ayarFont);
     m_cmbIlce->setObjectName("ilceler_comboBox");
 
-    QPushButton* btnBolgeVarsayilan = new QPushButton("Varsayılan", m_bolgeselAyarlarBox);
-    btnBolgeVarsayilan->setGeometry(110, 313, 85, 27);
-    btnBolgeVarsayilan->setFont(ayarFont);
-    btnBolgeVarsayilan->setToolTip("Varsayılan ayarlara dönmek isterseniz buraya tıklayın.");
-    btnBolgeVarsayilan->setObjectName("bolgesel_ayarlar_varsayilan_pushButton");
-    connect(btnBolgeVarsayilan, &QPushButton::clicked, this, &MainWindow::varsayilanAyarlar);
+    m_lblBolgeselDil = new QLabel("Dil :", m_bolgeselAyarlarBox);
+    m_lblBolgeselDil->setGeometry(15, 163, 65, 23);
+    m_lblBolgeselDil->setFont(ayarFont);
+    m_lblBolgeselDil->setObjectName("bolgesel_ayarlar_dil_label");
 
-    QPushButton* btnBolgeKaydet = new QPushButton("Kaydet", m_bolgeselAyarlarBox);
-    btnBolgeKaydet->setGeometry(200, 313, 85, 27);
-    btnBolgeKaydet->setFont(ayarFont);
-    btnBolgeKaydet->setToolTip("Program kapanıp açıldığında yaptığınız değişikliklerin\nhatırlanması için buraya tıklayın.");
-    btnBolgeKaydet->setObjectName("bolgesel_ayarlar_kaydet_pushButton");
-    connect(btnBolgeKaydet, &QPushButton::clicked, this, &MainWindow::ayarlariKaydet);
+    m_cmbDil = new QComboBox(m_bolgeselAyarlarBox);
+    m_cmbDil->setGeometry(80, 160, 205, 28);
+    m_cmbDil->setFont(QFont("Arial", 9));
+    m_cmbDil->setObjectName("dil_secimi_comboBox");
+    for (const QString& lCode : Localization::supportedLanguages()) {
+        m_cmbDil->addItem(Localization::languageDisplayName(lCode), lCode);
+    }
+    int langIdx = Localization::supportedLanguages().indexOf(Localization::currentLanguage());
+    if (langIdx >= 0) m_cmbDil->setCurrentIndex(langIdx);
+    connect(m_cmbDil, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onDilDegisti);
+
+    m_btnBolgeVarsayilan = new QPushButton("Varsayılan", m_bolgeselAyarlarBox);
+    m_btnBolgeVarsayilan->setGeometry(15, 313, 126, 27);
+    m_btnBolgeVarsayilan->setFont(ayarFont);
+    m_btnBolgeVarsayilan->setToolTip("Varsayılan ayarlara dönmek isterseniz buraya tıklayın.");
+    m_btnBolgeVarsayilan->setObjectName("bolgesel_ayarlar_varsayilan_pushButton");
+    connect(m_btnBolgeVarsayilan, &QPushButton::clicked, this, &MainWindow::varsayilanAyarlar);
+
+    m_btnBolgeKaydet = new QPushButton("Kaydet", m_bolgeselAyarlarBox);
+    m_btnBolgeKaydet->setGeometry(155, 313, 126, 27);
+    m_btnBolgeKaydet->setFont(ayarFont);
+    m_btnBolgeKaydet->setToolTip("Program kapanıp açıldığında yaptığınız değişikliklerin\nhatırlanması için buraya tıklayın.");
+    m_btnBolgeKaydet->setObjectName("bolgesel_ayarlar_kaydet_pushButton");
+    connect(m_btnBolgeKaydet, &QPushButton::clicked, this, &MainWindow::ayarlariKaydet);
 
     m_tabWidget->addTab(m_ayarlarTab, QIcon(":/resimler/ayarlar.png"), "");
     m_tabWidget->setTabToolTip(2, "Ayarlar (Genel & Bölgesel)");
@@ -593,6 +615,7 @@ void MainWindow::setupSesTab() {
         lbl->setGeometry(10, y + 2, 70, 17);
         lbl->setFont(sesFont);
         lbl->setObjectName(sesler[i] + "_ses_label");
+        m_sesLabels[sesler[i]] = lbl;
 
         QLineEdit* le = new QLineEdit(m_sesTab);
         le->setGeometry(65, y - 1, 135, 25);
@@ -605,15 +628,16 @@ void MainWindow::setupSesTab() {
         btnEkle->setGeometry(205, y, 40, 23);
         btnEkle->setObjectName(sesler[i] + "_toolButton");
         connect(btnEkle, &QToolButton::clicked, this, [this, le]() {
-            QString path = QFileDialog::getOpenFileName(this, "Aç", "", "Ses Dosyaları (*.mp3 *.ogg *.wma *.wav)");
+            QString path = QFileDialog::getOpenFileName(this, "Aç", "", Localization::tr("ses_filtre"));
             if (!path.isEmpty()) le->setText(path);
         });
+        m_sesEkleBtns[sesler[i]] = btnEkle;
 
         QToolButton* btnPlay = new QToolButton(m_sesTab);
         btnPlay->setGeometry(248, y, 35, 23);
         btnPlay->setIcon(playIco);
         btnPlay->setCursor(Qt::PointingHandCursor);
-        btnPlay->setToolTip("Oynat");
+        btnPlay->setToolTip(Localization::tr("btn_oynat"));
         connect(btnPlay, &QToolButton::clicked, this, [this, le, btnPlay]() {
             onSesOynatDurdur(le, btnPlay);
         });
@@ -646,17 +670,20 @@ void MainWindow::setupSesTab() {
         m_onizlemePlayer->setVolume(val);
     });
 
-    QPushButton* btnVarsayilan = new QPushButton("Varsayılan", m_sesTab);
-    btnVarsayilan->setGeometry(140, 350, 85, 28);
-    btnVarsayilan->setToolTip("Varsayılan ayarlara dönmek isterseniz buraya tıklayın.");
-    btnVarsayilan->setObjectName("ses_varsayilan_pushButton");
-    connect(btnVarsayilan, &QPushButton::clicked, this, &MainWindow::sesVarsayilanAyarlar);
+    QFont ayarFont("Arial", 10);
+    m_btnSesVarsayilan = new QPushButton("Varsayılan", m_sesTab);
+    m_btnSesVarsayilan->setGeometry(15, 350, 126, 28);
+    m_btnSesVarsayilan->setFont(ayarFont);
+    m_btnSesVarsayilan->setToolTip("Varsayılan ayarlara dönmek isterseniz buraya tıklayın.");
+    m_btnSesVarsayilan->setObjectName("ses_varsayilan_pushButton");
+    connect(m_btnSesVarsayilan, &QPushButton::clicked, this, &MainWindow::sesVarsayilanAyarlar);
 
-    QPushButton* btnKaydet = new QPushButton("Kaydet", m_sesTab);
-    btnKaydet->setGeometry(230, 350, 85, 28);
-    btnKaydet->setToolTip("Program kapanıp açıldığında yaptığınız değişikliklerin\nhatırlanması için buraya tıklayın.");
-    btnKaydet->setObjectName("ses_kaydet_pushButton");
-    connect(btnKaydet, &QPushButton::clicked, this, &MainWindow::ayarlariKaydet);
+    m_btnSesKaydet = new QPushButton("Kaydet", m_sesTab);
+    m_btnSesKaydet->setGeometry(155, 350, 126, 28);
+    m_btnSesKaydet->setFont(ayarFont);
+    m_btnSesKaydet->setToolTip("Program kapanıp açıldığında yaptığınız değişikliklerin\nhatırlanması için buraya tıklayın.");
+    m_btnSesKaydet->setObjectName("ses_kaydet_pushButton");
+    connect(m_btnSesKaydet, &QPushButton::clicked, this, &MainWindow::ayarlariKaydet);
 
     m_tabWidget->addTab(m_sesTab, QIcon(":/resimler/ses_dosyalari.png"), "");
     m_tabWidget->setTabToolTip(3, "Ses Ayarları");
@@ -666,9 +693,9 @@ void MainWindow::setupLinklerTab() {
     m_linkTab = new QWidget();
     m_linkTab->setObjectName("linkler_tab");
 
-    QGroupBox* grp = new QGroupBox("Yararlı Siteler", m_linkTab);
-    grp->setObjectName("linkler_groupBox");
-    grp->setGeometry(13, 4, 301, 381);
+    m_linklerBox = new QGroupBox("Yararlı Siteler", m_linkTab);
+    m_linklerBox->setObjectName("linkler_groupBox");
+    m_linklerBox->setGeometry(13, 4, 301, 381);
 
     struct LinkInfo { QString objName; int y; int w; QString url; QString ad; };
     QVector<LinkInfo> linkler = {
@@ -682,7 +709,7 @@ void MainWindow::setupLinklerTab() {
     };
 
     for (const auto& info : linkler) {
-        QLabel* lbl = new QLabel(grp);
+        QLabel* lbl = new QLabel(m_linklerBox);
         lbl->setObjectName(info.objName);
         lbl->setGeometry(15, info.y, info.w, 23);
         lbl->setFont(QFont("Arial", 11));
@@ -699,7 +726,7 @@ void MainWindow::setupLinklerTab() {
         m_linkLabels.append(lbl);
     }
 
-    QPushButton* btnAndroid = new QPushButton(grp);
+    QPushButton* btnAndroid = new QPushButton(m_linklerBox);
     btnAndroid->setObjectName("pushButton_android");
     btnAndroid->setGeometry(170, 265, 21, 21);
     btnAndroid->setIcon(QIcon(":/resimler/android.png"));
@@ -710,7 +737,7 @@ void MainWindow::setupLinklerTab() {
         QDesktopServices::openUrl(QUrl("https://play.google.com/store/apps/details?id=com.nesil.risalei_nur&hl=tr&gl=US"));
     });
 
-    QPushButton* btnIos = new QPushButton(grp);
+    QPushButton* btnIos = new QPushButton(m_linklerBox);
     btnIos->setObjectName("pushButton_ios");
     btnIos->setGeometry(200, 265, 21, 21);
     btnIos->setIcon(QIcon(":/resimler/ios.png"));
@@ -735,11 +762,11 @@ void MainWindow::setupMenuBar() {
     QFont actFont("Arial", 11);
 
     // 1. Dosya
-    QMenu* menuDosya = mb->addMenu("Dosya");
-    menuDosya->setObjectName("menuDosya");
-    menuDosya->setFont(menuFont);
+    m_menuDosya = mb->addMenu("Dosya");
+    m_menuDosya->setObjectName("menuDosya");
+    m_menuDosya->setFont(menuFont);
 
-    m_actCikis = menuDosya->addAction(QIcon(":/resimler/cikis.png"), "Çıkış");
+    m_actCikis = m_menuDosya->addAction(QIcon(":/resimler/cikis.png"), "Çıkış");
     m_actCikis->setObjectName("actionCikis");
     m_actCikis->setFont(actFont);
     m_actCikis->setIconVisibleInMenu(true);
@@ -747,9 +774,9 @@ void MainWindow::setupMenuBar() {
     connect(m_actCikis, &QAction::triggered, this, &MainWindow::programiKapat);
 
     // 2. Görünüm
-    QMenu* menuGorunum = mb->addMenu("Görünüm");
-    menuGorunum->setObjectName("menuGorunum");
-    menuGorunum->setFont(menuFont);
+    m_menuGorunum = mb->addMenu("Görünüm");
+    m_menuGorunum->setObjectName("menuGorunum");
+    m_menuGorunum->setFont(menuFont);
 
     m_arayuzGroup = new QActionGroup(this);
     m_arayuzGroup->setExclusive(true);
@@ -763,7 +790,7 @@ void MainWindow::setupMenuBar() {
     };
 
     for (const auto& m : modlar) {
-        QAction* act = menuGorunum->addAction(m.text);
+        QAction* act = m_menuGorunum->addAction(m.text);
         act->setCheckable(true);
         if (m.key == "saat") act->setChecked(true);
         connect(act, &QAction::triggered, this, [this, k = m.key]() { arayuzModunuUygula(k, true); });
@@ -771,17 +798,17 @@ void MainWindow::setupMenuBar() {
         m_arayuzActions[m.key] = act;
     }
 
-    menuGorunum->addSeparator();
+    m_menuGorunum->addSeparator();
 
     // Renk Teması Alt Menüsü (Temalar.py sırasıyla birebir)
-    QMenu* menuTema = menuGorunum->addMenu("Renk Teması");
+    m_menuTema = m_menuGorunum->addMenu("Renk Teması");
     m_temaGroup = new QActionGroup(this);
     m_temaGroup->setExclusive(true);
 
     const auto& temalarMap = Temalar::getTemalar();
     for (const QString& key : Temalar::getTemaAnahtarlari()) {
         if (!temalarMap.contains(key)) continue;
-        QAction* tAct = menuTema->addAction(temalarMap[key].ad);
+        QAction* tAct = m_menuTema->addAction(temalarMap[key].ad);
         tAct->setCheckable(true);
         if (key == "varsayilan") tAct->setChecked(true);
         connect(tAct, &QAction::triggered, this, [this, key]() { temayiUygula(key, true); });
@@ -790,7 +817,7 @@ void MainWindow::setupMenuBar() {
     }
 
     // Pencere Stili Alt Menüsü
-    QMenu* menuStil = menuGorunum->addMenu("Pencere Stili");
+    m_menuStil = m_menuGorunum->addMenu("Pencere Stili");
     m_stilGroup = new QActionGroup(this);
     m_stilGroup->setExclusive(true);
 
@@ -801,7 +828,7 @@ void MainWindow::setupMenuBar() {
         {"Windows", "Klasik Windows"}
     };
     for (const auto& st : stiller) {
-        QAction* sAct = menuStil->addAction(st.text);
+        QAction* sAct = m_menuStil->addAction(st.text);
         sAct->setFont(actFont);
         sAct->setCheckable(true);
         if (st.key == "Fusion") sAct->setChecked(true);
@@ -811,26 +838,26 @@ void MainWindow::setupMenuBar() {
     }
 
     // 3. Yardım
-    QMenu* menuYardim = mb->addMenu("Yardım");
-    menuYardim->setObjectName("menuYardim");
-    menuYardim->setFont(menuFont);
+    m_menuYardim = mb->addMenu("Yardım");
+    m_menuYardim->setObjectName("menuYardim");
+    m_menuYardim->setFont(menuFont);
 
-    QAction* actLisans = menuYardim->addAction("Lisans");
-    actLisans->setObjectName("actionLisans");
-    actLisans->setFont(actFont);
-    connect(actLisans, &QAction::triggered, this, &MainWindow::lisansAc);
+    m_actLisans = m_menuYardim->addAction("Lisans");
+    m_actLisans->setObjectName("actionLisans");
+    m_actLisans->setFont(actFont);
+    connect(m_actLisans, &QAction::triggered, this, &MainWindow::lisansAc);
 
-    menuYardim->addSeparator();
+    m_menuYardim->addSeparator();
 
-    QAction* actHakkinda = menuYardim->addAction("Hakkında");
-    actHakkinda->setObjectName("actionHakkinda");
-    actHakkinda->setFont(actFont);
-    connect(actHakkinda, &QAction::triggered, this, &MainWindow::hakkindaDialog);
+    m_actHakkinda = m_menuYardim->addAction("Hakkında");
+    m_actHakkinda->setObjectName("actionHakkinda");
+    m_actHakkinda->setFont(actFont);
+    connect(m_actHakkinda, &QAction::triggered, this, &MainWindow::hakkindaDialog);
 
-    QAction* actQt = menuYardim->addAction("Qt Hakkında");
-    actQt->setObjectName("actionQtHakkinda");
-    actQt->setFont(actFont);
-    connect(actQt, &QAction::triggered, qApp, &QApplication::aboutQt);
+    m_actQt = m_menuYardim->addAction("Qt Hakkında");
+    m_actQt->setObjectName("actionQtHakkinda");
+    m_actQt->setFont(actFont);
+    connect(m_actQt, &QAction::triggered, qApp, &QApplication::aboutQt);
 }
 
 void MainWindow::setupTray() {
@@ -976,7 +1003,7 @@ void MainWindow::diyanetAylikVakitleriKaydet() {
 
     QApplication::restoreOverrideCursor();
     if (basarili) {
-        statusBar()->showMessage("Kaynak: diyanet.gov.tr");
+        statusBar()->showMessage(Localization::tr("kaynak"));
         onLabelGuncelle();
     } else {
         statusBar()->clearMessage();
@@ -1330,10 +1357,21 @@ void MainWindow::hicriTarihiGuncelle() {
     double jd = m_calverter.gregorianToJd(hedef.year(), hedef.month(), hedef.day());
     auto hTarih = m_calverter.jdToIslamic(jd);
 
-    static const QStringList hicriAylar = {
-        "Muharrem", "Safer", "Rebiülevvel", "Rebiülahir", "Cemaziyelevvel", "Cemaziyelahir",
-        "Receb", "Şaban", "Ramazan", "Şevval", "Zilkade", "Zilhicce"
+    static const QMap<QString, QStringList> hicriAylarMap = {
+        {"tr", {"Muharrem", "Safer", "Rebiülevvel", "Rebiülahir", "Cemaziyelevvel", "Cemaziyelahir",
+                "Receb", "Şaban", "Ramazan", "Şevval", "Zilkade", "Zilhicce"}},
+        {"en", {"Muharram", "Safar", "Rabi' I", "Rabi' II", "Jumada I", "Jumada II",
+                "Rajab", "Sha'ban", "Ramadan", "Shawwal", "Dhu al-Qi'dah", "Dhu al-Hijjah"}},
+        {"de", {"Muharram", "Safar", "Rabi' I", "Rabi' II", "Dschumada I", "Dschumada II",
+                "Radschab", "Scha'ban", "Ramadan", "Schawwal", "Dhu l-qa'da", "Dhu l-hiddscha"}},
+        {"ru", {"Мухаррам", "Сафар", "Раби аль-авваль", "Раби ас-сани", "Джумада аль-уля", "Джумада ас-сания",
+                "Раджаб", "Шабан", "Рамадан", "Шавваль", "Зу-ль-када", "Зу-ль-хиджа"}},
+        {"zh", {"穆哈兰姆月", "色法尔月", "赖比尔·敖外鲁月", "赖比尔·阿色尼月", "主马达·敖外鲁月", "主马达·阿色尼月",
+                "热哲卜月", "舍尔邦月", "赖买丹月", "闪瓦鲁月", "都尔喀尔德月", "都尔黑哲月"}},
+        {"ja", {"ムハッラム", "サファル", "ラビー・アル＝アウワル", "ラビー・アッ＝サーニー", "ジュマーダー・アル＝ウーラー", "ジュマーダー・アッ＝サーニー",
+                "ラジャブ", "シャアバーン", "ラマダーン", "シャウワール", "ズー・アル＝カアダ", "ズー・アル＝ヒッジャ"}}
     };
+    QStringList hicriAylar = hicriAylarMap.value(Localization::currentLanguage(), hicriAylarMap.value("tr"));
 
     int hGun = std::get<2>(hTarih);
     int hAyIdx = std::get<1>(hTarih) - 1;
@@ -1385,12 +1423,9 @@ void MainWindow::onSaatGuncelle() {
     m_klasikSaatLabel->setText("Saat: " + m_saat);
     m_modernSaatLabel->setText(m_saat);
 
-    static const QStringList trAylar = {
-        "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
-        "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
-    };
     QDate curDate = QDate::currentDate();
-    m_miladiTarih = QString("%1 %2 %3").arg(curDate.day()).arg(trAylar[curDate.month() - 1]).arg(curDate.year());
+    QLocale loc(Localization::currentLanguage());
+    m_miladiTarih = loc.toString(curDate, "d MMMM yyyy");
     m_klasikMiladiLabel->setText(m_miladiTarih);
     m_modernMiladiLabel->setText(m_miladiTarih);
 
@@ -1409,7 +1444,7 @@ void MainWindow::onLabelGuncelle() {
 
     if (m_vakitler->imsak == "--:--") return;
 
-    statusBar()->showMessage("Kaynak: diyanet.gov.tr");
+    statusBar()->showMessage(Localization::tr("kaynak"));
 
     QString imsak = m_vakitler->imsak, gunes = m_vakitler->gunes, ogle = m_vakitler->ogle,
             ikindi = m_vakitler->ikindi, aksam = m_vakitler->aksam, yatsi = m_vakitler->yatsi;
@@ -1419,49 +1454,49 @@ void MainWindow::onLabelGuncelle() {
 
     if (saatDakika >= "00:00" && saatDakika < imsak) {
         kYatsi = "<font color='#FF0000'>" + yatsi + "</font>";
-        namazvakti = "Şimdi Yatsı Vakti";
-        sonrakivakit = "İmsak'a Kalan Süre :";
+        namazvakti = Localization::formatCurrentPrayer("yatsi");
+        sonrakivakit = Localization::formatRemainingTime("imsak");
         simdikivakit = "yatsı";
     } else if (saatDakika >= imsak && saatDakika < gunes) {
         kImsak = "<font color='#FF0000'>" + imsak + "</font>";
-        namazvakti = "Şimdi İmsak Vakti";
-        sonrakivakit = "Güneş'e Kalan Süre :";
+        namazvakti = Localization::formatCurrentPrayer("imsak");
+        sonrakivakit = Localization::formatRemainingTime("gunes");
         simdikivakit = "sabah";
         diniGunleriHatirlat();
-        vakitKontrol("Namaz Vakti", m_sesEdits["sabah"]->text(), kImsak, "sabah");
+        vakitKontrol(Localization::tr("namaz_vakitleri_tray"), m_sesEdits["sabah"]->text(), kImsak, "sabah");
     } else if (saatDakika >= gunes && saatDakika < ogle) {
         kGunes = "<font color='#FF0000'>" + gunes + "</font>";
-        namazvakti = "Şimdi Güneş Vakti";
-        sonrakivakit = "Öğle'ye Kalan Süre :";
+        namazvakti = Localization::formatCurrentPrayer("gunes");
+        sonrakivakit = Localization::formatRemainingTime("ogle");
         simdikivakit = "güneş";
     } else if (saatDakika >= ogle && saatDakika < ikindi) {
         kOgle = "<font color='#FF0000'>" + ogle + "</font>";
-        namazvakti = "Şimdi Öğle Vakti";
-        sonrakivakit = "İkindi'ye Kalan Süre :";
+        namazvakti = Localization::formatCurrentPrayer("ogle");
+        sonrakivakit = Localization::formatRemainingTime("ikindi");
         simdikivakit = "öğle";
         diniGunleriHatirlat();
-        vakitKontrol("Namaz Vakti", m_sesEdits["ogle"]->text(), kOgle, "öğle");
+        vakitKontrol(Localization::tr("namaz_vakitleri_tray"), m_sesEdits["ogle"]->text(), kOgle, "öğle");
     } else if (saatDakika >= ikindi && saatDakika < aksam) {
         kIkindi = "<font color='#FF0000'>" + ikindi + "</font>";
-        namazvakti = "Şimdi İkindi Vakti";
-        sonrakivakit = "Akşam'a Kalan Süre :";
+        namazvakti = Localization::formatCurrentPrayer("ikindi");
+        sonrakivakit = Localization::formatRemainingTime("aksam");
         simdikivakit = "ikindi";
         diniGunleriHatirlat();
-        vakitKontrol("Namaz Vakti", m_sesEdits["ikindi"]->text(), kIkindi, "ikindi");
+        vakitKontrol(Localization::tr("namaz_vakitleri_tray"), m_sesEdits["ikindi"]->text(), kIkindi, "ikindi");
     } else if (saatDakika >= aksam && saatDakika < yatsi) {
         kAksam = "<font color='#FF0000'>" + aksam + "</font>";
-        namazvakti = "Şimdi Akşam Vakti";
-        sonrakivakit = "Yatsı'ya Kalan Süre :";
+        namazvakti = Localization::formatCurrentPrayer("aksam");
+        sonrakivakit = Localization::formatRemainingTime("yatsi");
         simdikivakit = "akşam";
         diniGunleriHatirlat();
-        vakitKontrol("Namaz Vakti", m_sesEdits["aksam"]->text(), kAksam, "akşam");
+        vakitKontrol(Localization::tr("namaz_vakitleri_tray"), m_sesEdits["aksam"]->text(), kAksam, "akşam");
     } else {
         kYatsi = "<font color='#FF0000'>" + yatsi + "</font>";
-        namazvakti = "Şimdi Yatsı Vakti";
-        sonrakivakit = "İmsak'a Kalan Süre :";
+        namazvakti = Localization::formatCurrentPrayer("yatsi");
+        sonrakivakit = Localization::formatRemainingTime("imsak");
         simdikivakit = "yatsı";
         diniGunleriHatirlat();
-        vakitKontrol("Namaz Vakti", m_sesEdits["yatsi"]->text(), kYatsi, "yatsı");
+        vakitKontrol(Localization::tr("namaz_vakitleri_tray"), m_sesEdits["yatsi"]->text(), kYatsi, "yatsı");
     }
 
     m_klasikVakitLabels["imsak"]->setText(kImsak);
@@ -1584,8 +1619,8 @@ void MainWindow::gorselVerileriGuncelle() {
 
 void MainWindow::erkenUyariKontrol(int toplamDakika) {
     if (toplamDakika == m_spnErkenUyari->value() && m_chkErkenUyari->isChecked() && !m_mesajGosterildi) {
-        m_trayIcon->showMessage("Erken Uyarı",
-                                m_klasikSonrakiVakitLabel->text() + " " + QString::number(toplamDakika) + " Dakika",
+        m_trayIcon->showMessage(Localization::tr("erken_uyari"),
+                                m_klasikSonrakiVakitLabel->text() + " " + QString::number(toplamDakika) + " " + Localization::tr("dakika"),
                                 QSystemTrayIcon::Information, 20000);
         m_mesajGosterildi = true;
         if (m_sesChecks["uyari"]->isChecked()) {
@@ -1602,7 +1637,7 @@ void MainWindow::erkenUyariKontrol(int toplamDakika) {
 
 void MainWindow::selaOkuKontrol(int toplamDakika) {
     QDate bugun = QDate::currentDate();
-    if (bugun.dayOfWeek() == 5 && m_klasikDurumLabel->text() == "Şimdi Güneş Vakti") {
+    if (bugun.dayOfWeek() == 5) {
         if (toplamDakika == m_spnErkenSela->value() && !m_mesajGosterildi) {
             m_trayIcon->showMessage("Hâyırlı Cumalar", "\nSela okunuyor.", QSystemTrayIcon::Information, 20000);
             m_mesajGosterildi = true;
@@ -1659,21 +1694,172 @@ void MainWindow::ezanOku(const QString& dosya) {
 QString MainWindow::vakitlerMesaj() const {
     QString yer = !m_cmbIlce->currentText().isEmpty() ? m_cmbIlce->currentText() : m_cmbSehir->currentText();
     QString durum = m_namazVaktiStr;
-    durum.remove("Şimdi ");
-    return QString("%1 için %2\nİmsak: %3\tGüneş: %4\nÖğle: %5\tİkindi: %6\nAkşam: %7\tYatsı: %8")
-        .arg(yer, durum, m_vakitler->imsak, m_vakitler->gunes,
-             m_vakitler->ogle, m_vakitler->ikindi, m_vakitler->aksam, m_vakitler->yatsi);
+    QString header = Localization::tr("vakitler_icin_fmt").arg(yer, durum);
+    return QString("%1\n%2: %3\t%4: %5\n%6: %7\t%8: %9\n%10: %11\t%12: %13")
+        .arg(header,
+             Localization::tr("imsak"), m_vakitler->imsak,
+             Localization::tr("gunes"), m_vakitler->gunes,
+             Localization::tr("ogle"), m_vakitler->ogle,
+             Localization::tr("ikindi"), m_vakitler->ikindi,
+             Localization::tr("aksam"), m_vakitler->aksam,
+             Localization::tr("yatsi"), m_vakitler->yatsi);
 }
 
 void MainWindow::vakitleriGoster() {
-    m_trayIcon->showMessage("Namaz Vakitleri", vakitlerMesaj(), QSystemTrayIcon::Information, 20000);
+    m_trayIcon->showMessage(Localization::tr("namaz_vakitleri_tray"), vakitlerMesaj(), QSystemTrayIcon::Information, 20000);
 }
 
 void MainWindow::lisansAc() {
-    QString lisansDosyasi = m_programinKonumu + "/GPLv3_TR.html";
+    QString lisansDosyasi = Localization::getLicensePath(m_programinKonumu);
+    if (!QFile::exists(lisansDosyasi)) {
+        QString ustDizin = QFileInfo(m_programinKonumu).dir().absolutePath();
+        QString altLisans = Localization::getLicensePath(ustDizin);
+        if (QFile::exists(altLisans)) {
+            lisansDosyasi = altLisans;
+        }
+    }
     if (QFile::exists(lisansDosyasi)) {
         QDesktopServices::openUrl(QUrl::fromLocalFile(lisansDosyasi));
     }
+}
+
+void MainWindow::onDilDegisti(int index) {
+    if (index < 0 || index >= Localization::supportedLanguages().size()) return;
+    QString seciliDil = Localization::supportedLanguages().at(index);
+    if (seciliDil != Localization::currentLanguage()) {
+        Localization::setLanguage(seciliDil);
+        m_settings->setValue("Ayarlar/dil", seciliDil);
+        m_settings->sync();
+        retranslateUi();
+    }
+}
+
+void MainWindow::retranslateUi() {
+    setWindowTitle(QString("PyVakitci 1.8 - %1").arg(Localization::tr("tab_saat")));
+
+    if (m_tabWidget) {
+        m_tabWidget->setTabText(0, "");
+        m_tabWidget->setTabText(1, "");
+        m_tabWidget->setTabText(2, "");
+        m_tabWidget->setTabText(3, "");
+        m_tabWidget->setTabText(4, "");
+
+        m_tabWidget->setTabToolTip(0, Localization::tr("tab_saat"));
+        m_tabWidget->setTabToolTip(1, Localization::tr("tab_hava"));
+        m_tabWidget->setTabToolTip(2, Localization::tr("tab_ayarlar"));
+        m_tabWidget->setTabToolTip(3, Localization::tr("tab_ses"));
+        m_tabWidget->setTabToolTip(4, Localization::tr("tab_linkler"));
+    }
+
+    // Menüler
+    if (m_menuDosya) m_menuDosya->setTitle(Localization::tr("menu_dosya"));
+    if (m_menuGorunum) m_menuGorunum->setTitle(Localization::tr("menu_gorunum"));
+    if (m_menuTema) m_menuTema->setTitle(Localization::tr("menu_renk_temasi"));
+    if (m_menuStil) m_menuStil->setTitle(Localization::tr("menu_pencere_stili"));
+    if (m_menuYardim) m_menuYardim->setTitle(Localization::tr("menu_yardim"));
+
+    // Menü Actions
+    if (m_actCikis) m_actCikis->setText(Localization::tr("cikis"));
+    if (m_actLisans) m_actLisans->setText(Localization::tr("lisans"));
+    if (m_actHakkinda) m_actHakkinda->setText(Localization::tr("hakkinda"));
+    if (m_actQt) m_actQt->setText(Localization::tr("menu_qt_hakkinda"));
+
+    // Arayüz Modları Actions
+    if (m_arayuzActions.contains("saat") && m_arayuzActions["saat"]) m_arayuzActions["saat"]->setText(Localization::tr("mod_saat"));
+    if (m_arayuzActions.contains("gokyuzu") && m_arayuzActions["gokyuzu"]) m_arayuzActions["gokyuzu"]->setText(Localization::tr("mod_gokyuzu"));
+    if (m_arayuzActions.contains("kartlar") && m_arayuzActions["kartlar"]) m_arayuzActions["kartlar"]->setText(Localization::tr("mod_kartlar"));
+    if (m_arayuzActions.contains("klasik") && m_arayuzActions["klasik"]) m_arayuzActions["klasik"]->setText(Localization::tr("mod_klasik"));
+
+    // Renk Temaları Actions
+    for (auto it = m_temaActions.begin(); it != m_temaActions.end(); ++it) {
+        if (it.value()) {
+            it.value()->setText(Localization::tr("tema_" + it.key()));
+        }
+    }
+
+    // Pencere Stili Actions
+    if (m_stilActions.contains("Fusion") && m_stilActions["Fusion"]) m_stilActions["Fusion"]->setText(Localization::tr("stil_fusion"));
+    if (m_stilActions.contains("windowsvista") && m_stilActions["windowsvista"]) m_stilActions["windowsvista"]->setText(Localization::tr("stil_vista"));
+    if (m_stilActions.contains("Windows") && m_stilActions["Windows"]) m_stilActions["Windows"]->setText(Localization::tr("stil_windows"));
+
+    // Sistem Tepsisi
+    if (m_actVakitleriGoster) m_actVakitleriGoster->setText(Localization::tr("vakitleri_goster"));
+
+    // Ayarlar Sekmesi Butonları
+    if (m_btnGenelAyarlar) m_btnGenelAyarlar->setText("⚙ " + Localization::tr("genel_ayarlar"));
+    if (m_btnBolgeselAyarlar) m_btnBolgeselAyarlar->setText("📍 " + Localization::tr("bolgesel_ayarlar"));
+
+    // Genel Ayarlar
+    if (m_chkOtoCalistir) m_chkOtoCalistir->setText(Localization::tr("oto_calistir"));
+    if (m_chkIkonGoster) m_chkIkonGoster->setText(Localization::tr("sistem_tepsisi_ikon"));
+    if (m_chkSistemTepsisindeBaslat) m_chkSistemTepsisindeBaslat->setText(Localization::tr("sistem_tepsisi"));
+    if (m_chkOtoGuncelle) m_chkOtoGuncelle->setText(Localization::tr("oto_guncelle"));
+    if (m_chkHerZamanUstte) m_chkHerZamanUstte->setText(Localization::tr("her_zaman_ustte"));
+    if (m_chkBesmele) m_chkBesmele->setText(Localization::tr("besmele_ile_basla"));
+    if (m_chkSpotify) m_chkSpotify->setText(Localization::tr("spotify_duraklat"));
+    if (m_chkWinamp) m_chkWinamp->setText(Localization::tr("winamp_duraklat"));
+
+    if (m_chkErkenUyari) m_chkErkenUyari->setText(Localization::tr("erken_uyari_metin"));
+    if (m_chkErkenSela) m_chkErkenSela->setText(Localization::tr("erken_sela_metin"));
+    if (m_chkHicriGun) m_chkHicriGun->setText(Localization::tr("hicri_gun_metin"));
+
+    if (m_btnGoster) m_btnGoster->setText(Localization::tr("vakitleri_aylik_goster"));
+    if (m_btnGuncelle) m_btnGuncelle->setText(Localization::tr("vakitleri_guncelle"));
+    if (m_btnVarsayilan) m_btnVarsayilan->setText(Localization::tr("btn_varsayilan"));
+    if (m_btnKaydet) m_btnKaydet->setText(Localization::tr("btn_kaydet"));
+
+    // Bölgesel Ayarlar
+    if (m_lblBolgeselUlke) m_lblBolgeselUlke->setText(Localization::tr("ulke"));
+    if (m_lblBolgeselSehir) m_lblBolgeselSehir->setText(Localization::tr("sehir"));
+    if (m_lblBolgeselIlce) m_lblBolgeselIlce->setText(Localization::tr("ilce"));
+    if (m_lblBolgeselDil) m_lblBolgeselDil->setText(Localization::tr("dil"));
+    if (m_btnBolgeVarsayilan) m_btnBolgeVarsayilan->setText(Localization::tr("btn_varsayilan"));
+    if (m_btnBolgeKaydet) m_btnBolgeKaydet->setText(Localization::tr("btn_kaydet"));
+
+    // Ses Ayarları
+    static const QStringList sesKeys = {"sabah", "ogle", "ikindi", "aksam", "yatsi", "dua", "sela", "uyari"};
+    for (const QString& sk : sesKeys) {
+        if (m_sesLabels.contains(sk) && m_sesLabels[sk]) {
+            m_sesLabels[sk]->setText(Localization::tr(sk + "_etiket"));
+        }
+        if (m_sesEkleBtns.contains(sk) && m_sesEkleBtns[sk]) {
+            m_sesEkleBtns[sk]->setText(Localization::tr("btn_ekle"));
+        }
+        if (m_sesPlayBtns.contains(sk) && m_sesPlayBtns[sk]) {
+            m_sesPlayBtns[sk]->setToolTip(Localization::tr("btn_oynat"));
+        }
+    }
+    if (m_btnSesVarsayilan) m_btnSesVarsayilan->setText(Localization::tr("btn_varsayilan"));
+    if (m_btnSesKaydet) m_btnSesKaydet->setText(Localization::tr("btn_kaydet"));
+
+    // Linkler Sekmesi
+    if (m_linklerBox) m_linklerBox->setTitle(Localization::tr("yararli_siteler"));
+
+    // Vakit İsimleri
+    static const QStringList vakitKeys = {"imsak", "gunes", "ogle", "ikindi", "aksam", "yatsi"};
+    for (const QString& k : vakitKeys) {
+        if (m_modernAdLabels.contains(k) && m_modernAdLabels[k]) {
+            m_modernAdLabels[k]->setText(Localization::tr(k));
+        }
+        if (m_modernBadgeLabels.contains(k) && m_modernBadgeLabels[k]) {
+            m_modernBadgeLabels[k]->setText(Localization::tr("vakit_aktif"));
+        }
+        if (m_klasikVakitAdLabels.contains(k) && m_klasikVakitAdLabels[k]) {
+            m_klasikVakitAdLabels[k]->setText(Localization::tr(k));
+        }
+    }
+
+    // Statusbar
+    if (statusBar()) statusBar()->showMessage(Localization::tr("kaynak"));
+
+    // Hava durumu widget'ını tetikle
+    if (m_havaWidget) {
+        m_havaWidget->retranslateUi();
+    }
+
+    hicriTarihiGuncelle();
+    onSaatGuncelle();
+    onLabelGuncelle();
 }
 
 void MainWindow::hakkindaDialog() {
@@ -1804,8 +1990,51 @@ void MainWindow::testEkranGoruntuleriAl(const QString& outDir) {
         qApp->processEvents();
         this->grab().save(outDir + "/cpp_9_ses_ayarlari.png");
 
-        // Geri dön ve kapat
+        // --- İNGİLİZCE TESTLERİ ---
+        onDilDegisti(1);
+        qApp->processEvents();
+
+        // English Saat
+        m_tabWidget->setCurrentIndex(0);
+        arayuzModunuUygula("saat", false);
+        temayiUygula("varsayilan", false);
+        qApp->processEvents();
+        this->grab().save(outDir + "/cpp_en_saat_varsayilan.png");
+
+        // English Sade
+        arayuzModunuUygula("klasik", false);
+        qApp->processEvents();
+        this->grab().save(outDir + "/cpp_en_sade_varsayilan.png");
+
+        // English Modern Koyu
+        arayuzModunuUygula("kartlar", false);
+        temayiUygula("koyu", false);
+        qApp->processEvents();
+        this->grab().save(outDir + "/cpp_en_modern_koyu.png");
+
+        // English Hava Durumu
+        temayiUygula("varsayilan", false);
+        m_tabWidget->setCurrentIndex(1);
+        qApp->processEvents();
+        this->grab().save(outDir + "/cpp_en_hava_varsayilan.png");
+
+        // English Ses Ayarları
+        m_tabWidget->setCurrentIndex(3);
+        qApp->processEvents();
+        this->grab().save(outDir + "/cpp_en_ses_varsayilan.png");
+
+        // --- RUSÇA TESTİ ---
+        onDilDegisti(5);
+        arayuzModunuUygula("kartlar", false);
+        temayiUygula("koyu", false);
+        qApp->processEvents();
+        this->grab().save(outDir + "/cpp_ru_modern_koyu.png");
+
+        // Türkçe'ye dön ve kapat
+        onDilDegisti(0);
         onAyarAltSekmeDegisti(0);
+        arayuzModunuUygula("saat", false);
+        temayiUygula("varsayilan", false);
         m_tabWidget->setCurrentIndex(0);
         programiKapat();
     });
