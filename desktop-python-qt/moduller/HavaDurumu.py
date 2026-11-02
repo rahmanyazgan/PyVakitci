@@ -451,7 +451,7 @@ class HavaDurumuWidget(QtWidgets.QWidget):
         detaylar = [
             (tr("hava_hissedilen"), f"{self.veri['hissedilen']}°C"),
             (tr("hava_nem"), f"%{self.veri['nem']}"),
-            (tr("hava_ruzgar"), f"{self.veri['ruzgar']} km/s"),
+            (tr("hava_ruzgar"), f"{self.veri['ruzgar']} {tr('hava_ruzgar_birim')}"),
         ]
         for idx, (etiket, deger) in enumerate(detaylar):
             dx = 12.0 + idx * 96.0

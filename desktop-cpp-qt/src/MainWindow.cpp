@@ -369,7 +369,7 @@ void MainWindow::setupVakitTab() {
     }
 
     m_tabWidget->addTab(m_vakitTab, QIcon(":/resimler/cami.png"), "");
-    m_tabWidget->setTabToolTip(0, "Namaz Vakitleri");
+    m_tabWidget->setTabToolTip(0, Localization::tr("tab_saat"));
 }
 
 void MainWindow::setupHavaDurumuTab() {
@@ -381,7 +381,7 @@ void MainWindow::setupHavaDurumuTab() {
     m_havaWidget->show();
 
     m_tabWidget->addTab(m_havaTab, havaDurumuIkonuOlustur(), "");
-    m_tabWidget->setTabToolTip(1, "Hava Durumu");
+    m_tabWidget->setTabToolTip(1, Localization::tr("tab_hava"));
 }
 
 void MainWindow::setupAyarlarTab() {
@@ -595,7 +595,7 @@ void MainWindow::setupAyarlarTab() {
     connect(m_btnBolgeKaydet, &QPushButton::clicked, this, &MainWindow::ayarlariKaydet);
 
     m_tabWidget->addTab(m_ayarlarTab, QIcon(":/resimler/ayarlar.png"), "");
-    m_tabWidget->setTabToolTip(2, "Ayarlar (Genel & Bölgesel)");
+    m_tabWidget->setTabToolTip(2, Localization::tr("tab_ayarlar"));
 }
 
 void MainWindow::setupSesTab() {
@@ -686,7 +686,7 @@ void MainWindow::setupSesTab() {
     connect(m_btnSesKaydet, &QPushButton::clicked, this, &MainWindow::ayarlariKaydet);
 
     m_tabWidget->addTab(m_sesTab, QIcon(":/resimler/ses_dosyalari.png"), "");
-    m_tabWidget->setTabToolTip(3, "Ses Ayarları");
+    m_tabWidget->setTabToolTip(3, Localization::tr("tab_ses"));
 }
 
 void MainWindow::setupLinklerTab() {
@@ -749,7 +749,7 @@ void MainWindow::setupLinklerTab() {
     });
 
     m_tabWidget->addTab(m_linkTab, QIcon(":/resimler/linkler.png"), "");
-    m_tabWidget->setTabToolTip(4, "Yararlı Siteler");
+    m_tabWidget->setTabToolTip(4, Localization::tr("tab_linkler"));
 }
 
 void MainWindow::setupMenuBar() {

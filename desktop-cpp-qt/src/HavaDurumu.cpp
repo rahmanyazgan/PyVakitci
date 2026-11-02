@@ -159,7 +159,8 @@ void HavaDurumuThread::run() {
     for (int i = 0; i < limit; ++i) {
         QString tarihStr = times[i].toString();
         QDate dt = QDate::fromString(tarihStr, Qt::ISODate);
-        QString gunAd = (i == 0) ? Localization::tr("bugun") : (dt.isValid() ? Localization::dayName(dt.dayOfWeek()) : tarihStr);
+        int dayOfWeek = dt.isValid() ? dt.dayOfWeek() : 1;
+        QString gunAd = (i == 0) ? Localization::tr("bugun") : (dt.isValid() ? Localization::dayName(dayOfWeek) : tarihStr);
 
         int dc = (i < codes.size()) ? codes[i].toInt(0) : 0;
         auto dCift = wmoDurumGetir(dc);
@@ -167,7 +168,16 @@ void HavaDurumuThread::run() {
         int tmin = (i < mins.size() && !mins[i].isNull()) ? static_cast<int>(std::round(mins[i].toDouble())) : 0;
         int prob = (i < probs.size() && !probs[i].isNull()) ? probs[i].toInt(0) : 0;
 
-        gunlukListe.append({gunAd, dCift.first, dCift.second, tmax, tmin, prob});
+        GunlukTahmin gt;
+        gt.gun = gunAd;
+        gt.durum = dCift.first;
+        gt.tip = dCift.second;
+        gt.tMax = tmax;
+        gt.tMin = tmin;
+        gt.yagis = prob;
+        gt.wmoKodu = dc;
+        gt.dayOfWeek = dayOfWeek;
+        gunlukListe.append(gt);
     }
 
     HavaVerisi sonuc;
@@ -176,6 +186,7 @@ void HavaDurumuThread::run() {
     sonuc.nem = cur.value("relative_humidity_2m").toInt(0);
     sonuc.ruzgar = static_cast<int>(std::round(cur.value("wind_speed_10m").toDouble(0)));
     sonuc.gunduzMu = (cur.value("is_day").toInt(1) != 0);
+    sonuc.wmoKodu = wcode;
     sonuc.durum = durumCift.first;
     sonuc.tip = durumCift.second;
     sonuc.gunluk = gunlukListe;
@@ -210,6 +221,13 @@ void HavaDurumuWidget::retranslateUi() {
     if (m_yenileBtn) {
         m_yenileBtn->setText(QString("↻ %1").arg(Localization::tr("yenile")));
         m_yenileBtn->setToolTip(Localization::tr("hava_yenile_tooltip"));
+    }
+    if (m_veri.gecerli) {
+        m_veri.durum = Localization::weatherDescription(m_veri.wmoKodu);
+        for (int i = 0; i < m_veri.gunluk.size(); ++i) {
+            m_veri.gunluk[i].durum = Localization::weatherDescription(m_veri.gunluk[i].wmoKodu);
+            m_veri.gunluk[i].gun = (i == 0) ? Localization::tr("bugun") : Localization::dayName(m_veri.gunluk[i].dayOfWeek);
+        }
     }
     update();
 }
@@ -254,6 +272,11 @@ void HavaDurumuWidget::havaDurumunuGuncelle(bool zorla) {
 
 void HavaDurumuWidget::onVeriHazir(const HavaVerisi& veri) {
     m_veri = veri;
+    m_veri.durum = Localization::weatherDescription(m_veri.wmoKodu);
+    for (int i = 0; i < m_veri.gunluk.size(); ++i) {
+        m_veri.gunluk[i].durum = Localization::weatherDescription(m_veri.gunluk[i].wmoKodu);
+        m_veri.gunluk[i].gun = (i == 0) ? Localization::tr("bugun") : Localization::dayName(m_veri.gunluk[i].dayOfWeek);
+    }
     m_yukleniyor = false;
     m_hataMesaji.clear();
     update();
@@ -262,7 +285,7 @@ void HavaDurumuWidget::onVeriHazir(const HavaVerisi& veri) {
 void HavaDurumuWidget::onHata(const QString& hata) {
     Q_UNUSED(hata);
     m_yukleniyor = false;
-    m_hataMesaji = "Hava durumu bilgisi alınamadı.";
+    m_hataMesaji = Localization::tr("hava_hata");
     update();
 }
 
@@ -434,9 +457,13 @@ void HavaDurumuWidget::paintEvent(QPaintEvent*) {
     p.drawText(QRectF(24, 58, 140, 44), Qt::AlignLeft | Qt::AlignVCenter, QString("%1°C").arg(m_veri.sicaklik));
 
     // Durum Açıklaması
+    QString durumAciklama = Localization::weatherDescription(m_veri.wmoKodu);
+    if (durumAciklama.isEmpty()) {
+        durumAciklama = m_veri.durum;
+    }
     p.setPen(QColor(224, 242, 254));
     p.setFont(QFont("Segoe UI", 10, QFont::Bold));
-    p.drawText(QRectF(24, 104, 175, 20), Qt::AlignLeft | Qt::AlignVCenter, m_veri.durum);
+    p.drawText(QRectF(24, 104, 175, 20), Qt::AlignLeft | Qt::AlignVCenter, durumAciklama);
 
     // Bugün En Yüksek / En Düşük
     if (!m_veri.gunluk.isEmpty()) {
@@ -455,10 +482,14 @@ void HavaDurumuWidget::paintEvent(QPaintEvent*) {
 
     // 4. Üçlü Detay Kutuları (Hissedilen, Nem, Rüzgâr)
     struct DetayKutu { QString etiket; QString deger; };
+    QString ruzgarBirimi = Localization::tr("hava_ruzgar_birim");
+    if (ruzgarBirimi.isEmpty() || ruzgarBirimi == "hava_ruzgar_birim") {
+        ruzgarBirimi = (Localization::currentLanguage() == "tr") ? "km/s" : "km/h";
+    }
     QVector<DetayKutu> detaylar = {
         {Localization::tr("hava_hissedilen"), QString("%1°C").arg(m_veri.hissedilen)},
         {Localization::tr("hava_nem"), QString("%%1").arg(m_veri.nem)},
-        {Localization::tr("hava_ruzgar"), QString("%1 km/s").arg(m_veri.ruzgar)}
+        {Localization::tr("hava_ruzgar"), QString("%1 %2").arg(m_veri.ruzgar).arg(ruzgarBirimi)}
     };
     for (int idx = 0; idx < detaylar.size(); ++idx) {
         double dx = 12.0 + idx * 96.0;
@@ -511,17 +542,22 @@ void HavaDurumuWidget::paintEvent(QPaintEvent*) {
         p.drawRoundedRect(sRect, 6, 6);
 
         // Gün adı
+        QString gunAd = (idx == 0) ? Localization::tr("bugun") : Localization::dayName(g.dayOfWeek);
         p.setPen(baslikRenk);
         p.setFont(QFont("Segoe UI", 8, idx == 0 ? QFont::Bold : QFont::Normal));
-        p.drawText(QRectF(20, sy, 75, satirH), Qt::AlignLeft | Qt::AlignVCenter, g.gun);
+        p.drawText(QRectF(20, sy, 75, satirH), Qt::AlignLeft | Qt::AlignVCenter, gunAd);
 
         // Küçük İkon
         havaIkonuCiz(p, 108.0, sy + satirH / 2.0, 0.52, g.tip, true);
 
         // Durum veya Yağış İhtimali
-        QString durumMetni = g.durum;
+        QString durumGun = Localization::weatherDescription(g.wmoKodu);
+        if (durumGun.isEmpty()) {
+            durumGun = g.durum;
+        }
+        QString durumMetni = durumGun;
         if (g.yagis >= 20) {
-            durumMetni = QString("%1 (%%2)").arg(g.durum).arg(g.yagis);
+            durumMetni = QString("%1 (%%2)").arg(durumGun).arg(g.yagis);
         }
         p.setPen(ustYaziRenk);
         p.setFont(QFont("Segoe UI", 7));

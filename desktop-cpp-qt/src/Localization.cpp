@@ -151,6 +151,7 @@ void Localization::init() {
     trMap["dakika"] = "Dakika";
     trMap["yenile"] = "Yenile";
     trMap["hava_yenile_tooltip"] = "Hava durumunu şimdi güncelle";
+    trMap["hava_ruzgar_birim"] = "km/s";
 
     // ==========================================
     // 2. İNGİLİZCE (en)
@@ -273,6 +274,7 @@ void Localization::init() {
     enMap["dakika"] = "Minutes";
     enMap["yenile"] = "Refresh";
     enMap["hava_yenile_tooltip"] = "Update weather now";
+    enMap["hava_ruzgar_birim"] = "km/h";
 
     // ==========================================
     // 3. ALMANCA (de)
@@ -395,6 +397,7 @@ void Localization::init() {
     deMap["dakika"] = "Minuten";
     deMap["yenile"] = "Aktualisieren";
     deMap["hava_yenile_tooltip"] = "Wetter jetzt aktualisieren";
+    deMap["hava_ruzgar_birim"] = "km/h";
 
     // ==========================================
     // 4. ÇİNCE (zh)
@@ -517,6 +520,7 @@ void Localization::init() {
     zhMap["dakika"] = "分钟";
     zhMap["yenile"] = "刷新";
     zhMap["hava_yenile_tooltip"] = "立即更新天气";
+    zhMap["hava_ruzgar_birim"] = "km/h";
 
     // ==========================================
     // 5. JAPONCA (ja)
@@ -639,6 +643,7 @@ void Localization::init() {
     jaMap["dakika"] = "分";
     jaMap["yenile"] = "更新";
     jaMap["hava_yenile_tooltip"] = "天気を今すぐ更新";
+    jaMap["hava_ruzgar_birim"] = "km/h";
 
     // ==========================================
     // 6. RUSÇA (ru)
@@ -761,6 +766,7 @@ void Localization::init() {
     ruMap["dakika"] = "минут";
     ruMap["yenile"] = "Обновить";
     ruMap["hava_yenile_tooltip"] = "Обновить погоду сейчас";
+    ruMap["hava_ruzgar_birim"] = "км/ч";
 }
 
 QString Localization::currentLanguage() {
@@ -828,9 +834,13 @@ QString Localization::weatherDescription(int code) {
             case 51: return "Light drizzle";
             case 53: return "Moderate drizzle";
             case 55: return "Dense drizzle";
+            case 56:
+            case 57: return "Freezing drizzle";
             case 61: return "Slight rain";
             case 63: return "Moderate rain";
             case 65: return "Heavy rain";
+            case 66:
+            case 67: return "Freezing rain";
             case 71: return "Slight snow";
             case 73: return "Moderate snow";
             case 75: return "Heavy snow";
@@ -856,9 +866,13 @@ QString Localization::weatherDescription(int code) {
             case 51: return "Leichter Nieselregen";
             case 53: return "Mäßiger Nieselregen";
             case 55: return "Dichter Nieselregen";
+            case 56:
+            case 57: return "Gefrierender Nieselregen";
             case 61: return "Leichter Regen";
             case 63: return "Mäßiger Regen";
             case 65: return "Starker Regen";
+            case 66:
+            case 67: return "Gefrierender Regen";
             case 71: return "Leichter Schneefall";
             case 73: return "Mäßiger Schneefall";
             case 75: return "Starker Schneefall";
@@ -884,9 +898,13 @@ QString Localization::weatherDescription(int code) {
             case 51: return "微毛毛雨";
             case 53: return "毛毛雨";
             case 55: return "稠密毛毛雨";
+            case 56:
+            case 57: return "冻毛毛雨";
             case 61: return "小雨";
             case 63: return "中雨";
             case 65: return "大雨";
+            case 66:
+            case 67: return "冻雨";
             case 71: return "小雪";
             case 73: return "中雪";
             case 75: return "大雪";
@@ -912,9 +930,13 @@ QString Localization::weatherDescription(int code) {
             case 51: return "弱い霧雨";
             case 53: return "霧雨";
             case 55: return "強い霧雨";
+            case 56:
+            case 57: return "着氷性の霧雨";
             case 61: return "弱い雨";
             case 63: return "雨";
             case 65: return "強い雨";
+            case 66:
+            case 67: return "着氷性の雨";
             case 71: return "弱い雪";
             case 73: return "雪";
             case 75: return "強い雪";
@@ -940,9 +962,13 @@ QString Localization::weatherDescription(int code) {
             case 51: return "Легкая морось";
             case 53: return "Умеренная морось";
             case 55: return "Густая морось";
+            case 56:
+            case 57: return "Замерзающая морось";
             case 61: return "Небольшой дождь";
             case 63: return "Дождь";
             case 65: return "Сильный дождь";
+            case 66:
+            case 67: return "Ледяной дождь";
             case 71: return "Небольшой снег";
             case 73: return "Снегопад";
             case 75: return "Сильный снегопад";
@@ -970,9 +996,13 @@ QString Localization::weatherDescription(int code) {
         case 51: return "Hafif Çisenti";
         case 53: return "Orta Çisenti";
         case 55: return "Yoğun Çisenti";
+        case 56:
+        case 57: return "Dondurucu Çisenti";
         case 61: return "Hafif Yağmurlu";
         case 63: return "Yağmurlu";
         case 65: return "Kuvvetli Yağmur";
+        case 66:
+        case 67: return "Dondurucu Yağmur";
         case 71: return "Hafif Kar";
         case 73: return "Kar Yağışlı";
         case 75: return "Yoğun Kar";
